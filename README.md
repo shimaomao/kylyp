@@ -1,6 +1,6 @@
 # kylyp 
 
-[![Build Status](https://travis-ci.org/ivanceras/kylyp.svg?branch=master)](https://travis-ci.org/ivanceras/kylyp)
+[![Build Status](https://travis-ci.org/mcux/kylyp.svg?branch=master)](https://travis-ci.org/mcux/kylyp)
 
 A new Forum !
 
