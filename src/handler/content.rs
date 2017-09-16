@@ -340,7 +340,28 @@ pub fn get_user_comments(conn_pg: &Connection, user_id: i32) -> Vec<UserComment>
     }
     user_comments
 }
-
+pub fn get_user_blogs(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
+    let u_id = user_id;
+    let mut user_articles: Vec<Article> = vec![];
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
+                            article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
+                           FROM article WHERE article.uid = $1 ",&[&u_id]).unwrap() {
+        let article = Article {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            updated_at: row.get(9),
+        };
+        user_articles.push(article);
+    }
+    user_articles
+}
 pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage> {
     let u_id = user_id;
     let mut user_messages: Vec<UserMessage> = vec![];

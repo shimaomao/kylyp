@@ -10,7 +10,7 @@ use rocket::http::RawStr;
 use std::collections::HashMap;
 use rocket::outcome::IntoOutcome;
 use chrono::prelude::*;
-use handler::content::{UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_messages};
+use handler::content::{UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_blogs,get_user_messages};
 use chrono::{DateTime,Utc};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
@@ -66,6 +66,7 @@ struct UserInfo {
     this_user: Option<User>,
     user_articles: Vec<Article>,
     user_comments: Vec<UserComment>,
+    user_blogs: Vec<Article>,
     user_messages: Vec<UserMessage>,
     username: String,
     user_id: i32,
@@ -76,11 +77,13 @@ pub fn user_page(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32) -> Template {
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
         let comments = get_user_comments(&conn_pg, u_id);
+        let blogs = get_user_blogs(&conn_pg, u_id);
         let messages = get_user_messages(&conn_pg, u_id);
         let context = UserInfo {
             this_user: a_user,
             user_articles: articles,
             user_comments: comments,
+            user_blogs: blogs,
             user_messages: messages,
             username: "".to_string(),
             user_id: 0,
@@ -92,11 +95,13 @@ pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserO
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
         let comments = get_user_comments(&conn_pg, u_id);
+        let blogs = get_user_blogs(&conn_pg, u_id);
         let messages = get_user_messages(&conn_pg, u_id);
         let context = UserInfo {
             this_user: a_user,
             user_articles: articles,
             user_comments: comments,
+            user_blogs: blogs,
             user_messages: messages,
             username: user.0,
             user_id: user_id.0,
