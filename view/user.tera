@@ -67,8 +67,8 @@
                     <div id="tab1" class="tab1">
                         <ul id="menu-title">
                             <li id="one1" onclick="setTab('one',1)"><h4>MyPublish</h4></li>&emsp;
-                            <li id="one2" onclick="setTab('one',2)"><h4>MyComment</h4></li>&emsp;
-                            <li id="one3" onclick="setTab('one',3)"><h4>MyBlog</h4></li>&emsp;
+                            <li id="one2" onclick="setTab('one',2)"><h4>MyBlog</h4></li>&emsp;
+                            <li id="one3" onclick="setTab('one',3)"><h4>MyComment</h4></li>&emsp;
                             {% if user_id == this_user.id %}
                             <li id="one4" onclick="setTab('one',4)"><h4>MyMessage</h4></li>
                             {% endif %}
@@ -83,6 +83,16 @@
                                 {% endfor %}
                             </div>
                             <div id="con_one_2" style="display:none;" class="tab_content">
+                                {% for article in user_blogs %}
+                                {% if article.category == "Blog" %}
+                                    <div id="blog">
+                                            <div><a href="/article/{{ article.id }}"> {{ article.title }} </a></div>
+                                            <span id="info">{{ article.category }}</span>  • <span id="info">{{ article.created_at }}</span> • <span id="info">Comment:{{ article.comments_count }}</span>
+                                        </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div id="con_one_3" style="display:none;" class="tab_content">
                                 {% for comment_article in user_comments %}
                                     <div id="blog">
                                         <div>
@@ -96,29 +106,19 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                            <div id="con_one_3" style="display:none;" class="tab_content">
-                            {% for article in user_blogs %}
-                            {% if article.category == "Blog" %}
-                                <div id="blog">
-                                        <div><a href="/article/{{ article.id }}"> {{ article.title }} </a></div>
-                                        <span id="info">{{ article.category }}</span>  • <span id="info">{{ article.created_at }}</span> • <span id="info">Comment:{{ article.comments_count }}</span>
-                                    </div>
-                            {% endif %}
-                            {% endfor %}
-                            </div>
                             <div id="con_one_4" style="display:none;" class="tab_content">
-                            {% for message in user_messages %}
-                                {% if user_id == this_user.id %}
-                                    <div id="blog">
-                                        <div>
-                                            <span><a href="/user/{{ message.from_uid }}"> {{ message.from_uid_name }} </a></span> 
-                                            <span > at </span> <span ><a href="/article/{{ message.article_id }}"> {{ message.article_title }} </a></span> <span >comment you</span>  
-                                            <span id="info" >{{ message.message_created_at }}</span>
+                                {% for message in user_messages %}
+                                    {% if user_id == this_user.id %}
+                                        <div id="blog">
+                                            <div>
+                                                <span><a href="/user/{{ message.from_uid }}"> {{ message.from_uid_name }} </a></span> 
+                                                <span > at </span> <span ><a href="/article/{{ message.article_id }}"> {{ message.article_title }} </a></span> <span >comment you</span>  
+                                                <span id="info" >{{ message.message_created_at }}</span>
+                                            </div>
+                                            <span id="comment-info" >{{ message.comment_cooked }}</span>
                                         </div>
-                                        <span id="comment-info" >{{ message.comment_cooked }}</span>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>    
                     </div>
