@@ -27,9 +27,6 @@
                         <a href="/doc">Doc</a>
                     </li>
                     <li >
-                        <a href="/news">News</a>
-                    </li >
-                    <li >
                         <a href="/area">Area</a>
                     </li >
                     {% if username %}
@@ -96,7 +93,6 @@
     
         <span id="nav_left">
                 <li class="menu-item"><a href="/doc">Doc</a></li>
-                <li class="menu-item"><a href="/news">News</a></li>
                 <li class="menu-item"><a href="/area">Area</a></li>
         </span>
         

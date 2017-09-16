@@ -28,9 +28,6 @@
                         <a href="/doc">Doc</a>
                     </li>
                     <li >
-                        <a href="/news">News</a>
-                    </li >
-                    <li >
                         <a href="/area">Area</a>
                     </li >
                     {% if username %}
@@ -66,21 +63,24 @@
                                 <li id="one7" onclick="setTab('one',7)">Blog</li>
                             </div>
                             <div id="topic">
-                                <a href=""><h3>Rust new Forum in rust!</h3></a>
-                                <p>Look, my liege! Shut up! But you are dressed as one&hellip;</p> 
-                            </div>
-                            <div id="topic">
-                                <a href=""><h3>Rust new Forum in rust!</h3></a> 
-                                <p>Look, my liege! Shut up! But you are dressed as one&hellip;</p>
-                            </div>
-                            <div id="topic" class="last">
-                                <a href=""><h3>Rust new Forum in rust!</h3></a>
-                                <p>Look, my liege! Shut up! But you are dressed as one&hellip;</p>
+                                {% for data in datas %}
+                                {% if data.category == "Announcement" %}
+                                    <div id="annu">
+                                        <div>
+                                            <span id="annu-title"> <a href="/article/{{ data.id }}" title="{{ data.title }}"> {{ data.title }} </a></span>
+                                            <span id="right-info">{{ data.comments_count }}</span>
+                                        </div>
+                                        <span id="info" style="color: #EC0DBC;;">{{ data.category }}</span>  •  <span id="info"><a href="/user/{{data.uid}}">{{ data.username }}</a></span> •   
+                                        <span id="info">{{ data.created_at }}</span>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
                     </article>
                     <div id="con_one_1">
                         {% for data in datas %}
+                        {% if data.category != "Announcement" %}
                         <article>
                             <div id="blog">
                                 <div>
@@ -91,6 +91,7 @@
                                 <span id="info">{{ data.created_at }}</span>
                             </div>
                         </article>
+                        {% endif %}
                         {% endfor %}
                     </div>
                     <div id="con_one_2" style="display:none;">
@@ -225,7 +226,6 @@
     
         <span id="nav_left">
                 <li class="menu-item"><a href="/doc">Doc</a></li>
-                <li class="menu-item"><a href="/news">News</a></li>
                 <li class="menu-item"><a href="/area">Area</a></li>
         </span>
         {% if username %}

@@ -28,9 +28,6 @@
                         <a href="/doc">Doc</a>
                     </li>
                     <li >
-                        <a href="/news">News</a>
-                    </li >
-                    <li >
                         <a href="/area">Area</a>
                     </li >
                     {% if username %}
@@ -101,13 +98,14 @@
                                     </div>
                                 {% endfor %}
                             </div>
+                           
                             <div id="con_one_3" style="display:none;" class="tab_content">
                             {% for message in user_messages %}
                                 {% if user_id == this_user.id %}
                                     <div id="blog">
                                         <div>
                                             <span><a href="/user/{{ message.from_uid }}"> {{ message.from_uid_name }} </a></span> 
-                                            <span id="info"> at </span> <span><a href="/article/{{ message.article_id }}"> {{ message.article_title }} </a></span> <span id="info">comment you</span>  
+                                            <span > at </span> <span ><a href="/article/{{ message.article_id }}"> {{ message.article_title }} </a></span> <span >comment you</span>  
                                             <span id="info" >{{ message.message_created_at }}</span>
                                         </div>
                                         <span id="comment-info" >{{ message.comment_cooked }}</span>
@@ -154,7 +152,6 @@
     
         <span id="nav_left">
                 <li class="menu-item"><a href="/doc">Doc</a></li>
-                <li class="menu-item"><a href="/news">News</a></li>
                 <li class="menu-item"><a href="/area">Area</a></li>
         </span>
         {% if username %}

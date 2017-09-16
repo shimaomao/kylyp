@@ -31,9 +31,6 @@
                         <a href="/doc">Doc</a>
                     </li>
                     <li >
-                        <a href="/news">News</a>
-                    </li >
-                    <li >
                         <a href="/area">Area</a>
                     </li >
                     {% if username %}
