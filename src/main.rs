@@ -3,6 +3,7 @@
 #![plugin(dotenv_macros)]
 #![feature(custom_derive)]
 #![feature(custom_attribute)]
+#![feature(decl_macro)]
 #![recursion_limit = "128"]
 
 #[macro_use]
