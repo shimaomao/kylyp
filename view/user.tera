@@ -35,10 +35,10 @@
                         <a href="/article/new">New</a>
                     </li>
                     <li >
-                        <div id="last">
-                        <a  href="/user/{{ user_id }}">{{ username }}</a>
+                        <a  href="/user/{{ user_id }}?count={{count}}">{{ username }}</a>
+                    </li>
+                    <li >
                         <a  href="/user/logout">Logout</a>
-                        </div>
                     </li>
                     {% else %}
                     <li >
@@ -61,6 +61,7 @@
                                     <p>email:{{ this_user.email }}</p>
                                     <p>Reg-time:{{ this_user.created_at }}</p>
                                     <p>Topic:  Comment:</p>
+                                    <p>Unread_count: {{ count }}</p>
                                 </div>
                             </div>
                     </div>
@@ -70,10 +71,15 @@
                             <li id="one2" onclick="setTab('one',2)"><h4>MyBlog</h4></li>&emsp;
                             <li id="one3" onclick="setTab('one',3)"><h4>MyComment</h4></li>&emsp;
                             {% if user_id == this_user.id %}
-                            <li id="one4" onclick="setTab('one',4)"><h4>MyMessage</h4></li>
+                            <li id="one4" onclick="setTab('one',4)"><h4>
+                                <span>MyMessage</span> 
+                                {% if count > 0 %}
+                                    <span style="color: #EC0DBC;"><strong> {{count}}</strong></span>
+                                {% endif %}
+                            </h4></li>
                             {% endif %}
                         </ul>
-                        <div id="message-content">
+                        <div id="user-info">
                             <div id="con_one_1" class="tab_content">
                                 {% for article in user_articles %}
                                     <div id="blog">
@@ -106,9 +112,20 @@
                                     </div>
                                 {% endfor %}
                             </div>
+                            {% if user_id == this_user.id %}
                             <div id="con_one_4" style="display:none;" class="tab_content">
                                 {% for message in user_messages %}
-                                    {% if user_id == this_user.id %}
+                                        {% if loop.index <= count %}
+                                        <div id="blog">
+                                            <div>
+                                                <span><a href="/user/{{ message.from_uid }}"> {{ message.from_uid_name }} </a></span> 
+                                                <span > at </span> <span ><a href="/article/{{ message.article_id }}"> {{ message.article_title }} </a></span> <span >comment you</span>  
+                                                <span id="info" >{{ message.message_created_at }}</span>
+                                                <span id="info" style="float: right; font-size: 16px; color: #EC0DBC;" ><strong> new </strong></span>
+                                            </div>
+                                            <span id="comment-info" >{{ message.comment_cooked }}</span>
+                                        </div>
+                                        {% else %}
                                         <div id="blog">
                                             <div>
                                                 <span><a href="/user/{{ message.from_uid }}"> {{ message.from_uid_name }} </a></span> 
@@ -117,9 +134,10 @@
                                             </div>
                                             <span id="comment-info" >{{ message.comment_cooked }}</span>
                                         </div>
-                                    {% endif %}
+                                        {% endif %}
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </div>    
                     </div>
                 </div> 
@@ -171,7 +189,7 @@
         </span>
         <span id="nav_right">
                 <li ><a href="/user/{{ user_id }}">{{ username }} &emsp;</a></li>
-                <li ><a href="/user/logou">Logout</a></li>
+                <li ><a href="/user/logout">Logout</a></li>
         </span>
         {% else %}
         <span id="nav_right">

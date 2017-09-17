@@ -1,7 +1,7 @@
 use diesel;
 use diesel::prelude::*;
 use model::article::{Article,Comment,NewArticle,NewComment,STATUS};
-use model::user::{User,NewMessage,message_mode,message_status};
+use model::user::{User,NewMessage,Message,message_mode,message_status};
 use controller::user::UserId;
 use chrono::prelude::*;
 use regex::{Regex,Captures};
@@ -94,7 +94,6 @@ impl Setting {
         cfg.try_into()
     }
 }
-
 
 pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
     let mut article_result: Vec<Uarticle> = vec![];
@@ -256,11 +255,12 @@ pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid
         conn_pg.execute("INSERT INTO message (aid, cid, from_uid, to_uid, raw, cooked, mode, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)",
                  &[&aid, &comment_id, &uid, &author_id, &raw, &cooked, &message_mode::REPLY_ARTICLE, &message_status::INIT, &created_at]).unwrap();
     }
+    //send message to mentions.
     to_uids.sort();
     to_uids.dedup();
     for to_uid in to_uids.iter().filter(|&x| *x != author_id && *x != uid) {
         conn_pg.execute("INSERT INTO message(aid, cid, from_uid, to_uid, raw, cooked, mode, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)",
-                &[&aid, &comment_id, &uid, &to_uid, &raw, &cooked, &message_mode::REPLY_ARTICLE, &message_status::INIT, &created_at]).unwrap();
+                &[&aid, &comment_id, &uid, &to_uid, &raw, &cooked, &message_mode::MENTION, &message_status::INIT, &created_at]).unwrap();
     }
 }
 
@@ -295,7 +295,7 @@ pub fn get_user_articles(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
     let mut user_articles: Vec<Article> = vec![];
     for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
                             article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
-                           FROM article WHERE article.uid = $1 ",&[&u_id]).unwrap() {
+                           FROM article WHERE article.uid = $1 ORDER BY created_at DESC",&[&u_id]).unwrap() {
         let article = Article {
             id: row.get(0),
             uid: row.get(1),
@@ -312,12 +312,33 @@ pub fn get_user_articles(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
     }
     user_articles
 }
-
+pub fn get_user_blogs(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
+    let u_id = user_id;
+    let mut user_articles: Vec<Article> = vec![];
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
+                            article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
+                           FROM article WHERE article.uid = $1 ORDER BY created_at DESC",&[&u_id]).unwrap() {
+        let article = Article {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            updated_at: row.get(9),
+        };
+        user_articles.push(article);
+    }
+    user_articles
+}
 pub fn get_user_comments(conn_pg: &Connection, user_id: i32) -> Vec<UserComment> {
     let u_id = user_id;
     let mut user_comments: Vec<UserComment> = vec![];
     for row in &conn_pg.query("SELECT comment.*, article.* FROM comment, article 
-                        where comment.aid = article.id and comment.uid = $1 order by comment.id  ",&[&u_id]).unwrap() {
+                        where comment.aid = article.id and comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
         let comment = UserComment {
                 id: row.get(0),
                 aid: row.get(1),
@@ -340,28 +361,7 @@ pub fn get_user_comments(conn_pg: &Connection, user_id: i32) -> Vec<UserComment>
     }
     user_comments
 }
-pub fn get_user_blogs(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
-    let u_id = user_id;
-    let mut user_articles: Vec<Article> = vec![];
-    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
-                            article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
-                           FROM article WHERE article.uid = $1 ",&[&u_id]).unwrap() {
-        let article = Article {
-            id: row.get(0),
-            uid: row.get(1),
-            category: row.get(2),
-            status: row.get(3),
-            comments_count: row.get(4),
-            title: row.get(5),
-            raw: row.get(6),
-            cooked: row.get(7),
-            created_at: row.get(8),
-            updated_at: row.get(9),
-        };
-        user_articles.push(article);
-    }
-    user_articles
-}
+
 pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage> {
     let u_id = user_id;
     let mut user_messages: Vec<UserMessage> = vec![];
@@ -388,3 +388,33 @@ pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage>
     user_messages
 }
 
+pub fn get_unread_message_count(conn_pg: &Connection, to_uid: i32) -> i32 {
+    let mut all_count: Vec<Message> = vec![];
+    let mut read_count: i32 = 0;
+    for row in &conn_pg.query("SELECT * from message where to_uid = $1 and status = $2", &[&to_uid,&message_status::INIT]).unwrap() {
+        let message = Message {
+                id: row.get(0),
+                aid: row.get(1),
+                cid: row.get(2),
+                from_uid: row.get(3),
+                to_uid: row.get(4),
+                raw: row.get(5),
+                cooked: row.get(6),
+                mode: row.get(7),
+                status: row.get(8),
+                created_at: row.get(9),
+        };
+        read_count += message.status;
+        all_count.push(message);
+    }
+    let all_count = all_count.len() as i32 ;
+    all_count - read_count
+
+}
+
+pub fn update_user_message(conn_pg: &Connection, to_uid: i32, count: i32) {
+    for i in 0..count {
+        &conn_pg.execute("UPDATE message SET status = $1 WHERE to_uid = $2", &[&message_status::READ, &to_uid]).unwrap();
+    }
+    
+}

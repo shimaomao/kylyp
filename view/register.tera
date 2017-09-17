@@ -34,10 +34,10 @@
                         <a href="/article/new">New</a>
                     </li>
                     <li >
-                        <div id="last">
-                        <a  href="/user/{{ user_id }}">{{ username }}</a>
+                        <a  href="/user/{{ user_id }}?count={{count}}">{{ username }}</a>
+                    </li>
+                    <li >
                         <a  href="/user/logout">Logout</a>
-                        </div>
                     </li>
                     {% else %}
                     <li >

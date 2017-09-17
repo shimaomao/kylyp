@@ -35,10 +35,10 @@
                         <a href="/article/new">New</a>
                     </li>
                     <li >
-                        <div id="last">
-                        <a  href="/user/{{ user_id }}">{{ username }}</a>
+                        <a  href="/user/{{ user_id }}?count={{count}}">{{ username }}</a>
+                    </li>
+                    <li >
                         <a  href="/user/logout">Logout</a>
-                        </div>
                     </li>
                     {% else %}
                     <li >
@@ -70,7 +70,7 @@
                                             <span id="annu-title"> <a href="/article/{{ data.id }}" title="{{ data.title }}"> {{ data.title }} </a></span>
                                             <span id="right-info">{{ data.comments_count }}</span>
                                         </div>
-                                        <span id="info" style="color: #EC0DBC;;">{{ data.category }}</span>  •  <span id="info"><a href="/user/{{data.uid}}">{{ data.username }}</a></span> •   
+                                        <span id="info" style="color: #EC0DBC;">{{ data.category }}</span>  •  <span id="info"><a href="/user/{{data.uid}}">{{ data.username }}</a></span> •   
                                         <span id="info">{{ data.created_at }}</span>
                                     </div>
                                 {% endif %}
@@ -192,6 +192,13 @@
                     </div>
                 </div>
 
+                {% if count > 0 %}
+                <div class="re-desk-25 re-table-100">
+                    <div id="aside">
+                        <a id="new-message" href="/user/{{ user_id }}?count={{count}}">{{ count }}&nbsp;New&nbsp;Message</a>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="re-desk-25 re-table-100">
                     <div id="aside">
                         <h3>What</h3>
@@ -237,8 +244,8 @@
                 </ul>
         </span>
         <span id="nav_right">
-                <li ><a href="/user/{{ user_id }}">{{ username }} &emsp;</a></li>
-                <li ><a href="/user/logou">Logout</a></li>
+                <li ><a href="/user/{{ user_id }}?count={{count}}">{{ username }}&emsp;</a></li>
+                <li ><a href="/user/logout">Logout</a></li>
         </span>
         {% else %}
         <span id="nav_right">

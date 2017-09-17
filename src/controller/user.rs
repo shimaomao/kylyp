@@ -10,7 +10,7 @@ use rocket::http::RawStr;
 use std::collections::HashMap;
 use rocket::outcome::IntoOutcome;
 use chrono::prelude::*;
-use handler::content::{UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_blogs,get_user_messages};
+use handler::content::{UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_blogs,get_user_messages,get_unread_message_count,update_user_message};
 use chrono::{DateTime,Utc};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
@@ -19,7 +19,10 @@ use model::pg::ConnPg;
 pub struct Uid {
     id: i32,
 }
-
+#[derive(FromForm,Debug)]
+pub struct DataCount {
+    count: i32,
+}
 #[derive(Debug)]
 pub struct UserOr(pub String);
 #[derive(Debug)]
@@ -70,9 +73,10 @@ struct UserInfo {
     user_messages: Vec<UserMessage>,
     username: String,
     user_id: i32,
+    count: i32,
 }
 
-#[get("/<u_id>", rank = 2)]
+#[get("/<u_id>", rank = 3)]
 pub fn user_page(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32) -> Template {
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
@@ -87,30 +91,56 @@ pub fn user_page(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32) -> Template {
             user_messages: messages,
             username: "".to_string(),
             user_id: 0,
+            count:0,
         };
         Template::render("user", &context)
 }
-#[get("/<u_id>")]
-pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserOr, user_id: UserId) -> Template {
+#[get("/<u_id>?<date_count>")]
+pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserOr, user_id: UserId,date_count: DataCount) -> Template {
+        let to_uid = user_id.0;
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
         let comments = get_user_comments(&conn_pg, u_id);
         let blogs = get_user_blogs(&conn_pg, u_id);
         let messages = get_user_messages(&conn_pg, u_id);
-        let context = UserInfo {
-            this_user: a_user,
-            user_articles: articles,
-            user_comments: comments,
-            user_blogs: blogs,
-            user_messages: messages,
-            username: user.0,
-            user_id: user_id.0,
-        };
-        Template::render("user", &context)
+        if date_count.count != 0 {
+            let read_count = date_count.count;
+            let unread_count = get_unread_message_count(&conn_pg, to_uid);
+            update_user_message(&conn_pg,to_uid, read_count);
+            let context = UserInfo {
+                this_user: a_user,
+                user_articles: articles,
+                user_comments: comments,
+                user_blogs: blogs,
+                user_messages: messages,
+                username: user.0,
+                user_id: user_id.0,
+                count: unread_count,
+
+            };
+            Template::render("user", &context)
+        } else {
+            let unread_count = get_unread_message_count(&conn_pg, to_uid);
+            let context = UserInfo {
+                this_user: a_user,
+                user_articles: articles,
+                user_comments: comments,
+                user_blogs: blogs,
+                user_messages: messages,
+                username: user.0,
+                user_id: user_id.0,
+                count: unread_count,
+
+            };
+            Template::render("user", &context)
+        }
+        
+
+   
 }
 
 
-#[get("/register", rank = 3)]
+#[get("/register", rank = 2)]
 pub fn register(flash: Option<FlashMessage>) -> Template {
     let mut context = HashMap::new();
     if let Some(ref msg) = flash {
@@ -129,7 +159,7 @@ pub fn login_register(user: UserOr) -> Template {
 //     Redirect::to(&*("/index/".to_string() + &*user.0.to_string()))
 // }
 
-#[get("/login", rank = 4)]
+#[get("/login", rank = 2)]
 pub fn login(flash: Option<FlashMessage>) -> Template {
     let mut context = HashMap::new();
     if let Some(ref msg) = flash {

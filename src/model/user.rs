@@ -57,5 +57,5 @@ pub mod message_mode {
 
 pub mod message_status {
     pub const INIT: i32 = 0;                
-    pub const READ: i32 = 1;                
+    pub const READ: i32 = -1;                
 }    

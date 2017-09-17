@@ -4,7 +4,7 @@ use rocket::request::Request;
 use rocket::response::NamedFile;
 use rocket_contrib::Template;
 use controller::user::{UserId,UserOr};
-use handler::content::{Uarticle,article_list};
+use handler::content::{Uarticle,article_list,get_unread_message_count};
 use model::pg::ConnPg;
 
 #[derive(Serialize)]
@@ -12,12 +12,14 @@ struct TemplateContext {
     datas: Vec<Uarticle>,
     username: String,
     user_id: i32,
+    count: i32,
 }
 #[derive(Serialize)]
 struct TemplateDoc {
     username: String,
     user_id: i32,
 }
+
 
 #[get("/",rank = 2)]
 pub fn index(conn_pg: ConnPg) -> Template {
@@ -26,6 +28,7 @@ pub fn index(conn_pg: ConnPg) -> Template {
         datas: datas,
         username: "".to_string(),
         user_id: 0,
+        count: 0,
     };
     Template::render("index", &context)
 }
@@ -33,11 +36,14 @@ pub fn index(conn_pg: ConnPg) -> Template {
 #[get("/")]
 pub fn index_user(conn_pg: ConnPg, user: UserOr, user_id: UserId) -> Template {
     let datas = article_list(&conn_pg);
+    let count = get_unread_message_count(&conn_pg, user_id.0);
     let context = TemplateContext {
         datas: datas,
         username: user.0,
         user_id: user_id.0,
+        count:count,
     };
+     
     Template::render("index", &context)
 }
 
@@ -72,24 +78,6 @@ pub fn area_user(user: UserOr, user_id: UserId) -> Template {
     };
     Template::render("area", &context)
 }
-
-#[get("/news",rank = 2)]
-pub fn news() -> Template {
-    let mut context = HashMap::new();
-    context.insert("No login user", "".to_string());
-    Template::render("news", &context)
-}
-
-#[get("/news")]
-pub fn news_user(user: UserOr, user_id: UserId) -> Template {
-    let context = TemplateDoc {
-        username: user.0,
-        user_id: user_id.0,
-    };
-    Template::render("news", &context)
-}
-
-
 
 
 
