@@ -14,8 +14,6 @@ $ cargo install diesel_cli
 $ diesel setup
 $ cargo run
 ```
-### Project And Plan
-[Releases.md](https://github.com/mcux/kylyp/blob/master/Releases.md)
 
 ### Contribute
  
