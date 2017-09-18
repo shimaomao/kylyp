@@ -188,7 +188,7 @@
                 </ul>
         </span>
         <span id="nav_right">
-                <li ><a href="/user/{{ user_id }}">{{ username }} &emsp;</a></li>
+                <li ><a href="/user/{{ user_id }}?count={{count}}">{{ username }} &emsp;</a></li>
                 <li ><a href="/user/logout">Logout</a></li>
         </span>
         {% else %}

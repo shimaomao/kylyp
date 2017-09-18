@@ -76,7 +76,7 @@ struct UserInfo {
     count: i32,
 }
 
-#[get("/<u_id>", rank = 3)]
+#[get("/<u_id>", rank = 4)]
 pub fn user_page(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32) -> Template {
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
@@ -95,9 +95,28 @@ pub fn user_page(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32) -> Template {
         };
         Template::render("user", &context)
 }
+#[get("/<u_id>", rank = 3)]
+pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserOr, user_id: UserId) -> Template {
+        let a_user = get_user_info(&conn_dsl, u_id);
+        let articles = get_user_articles(&conn_pg, u_id);
+        let comments = get_user_comments(&conn_pg, u_id);
+        let blogs = get_user_blogs(&conn_pg, u_id);
+        let messages = get_user_messages(&conn_pg, u_id);
+        let unread_count = get_unread_message_count(&conn_pg, u_id);
+        let context = UserInfo {
+            this_user: a_user,
+            user_articles: articles,
+            user_comments: comments,
+            user_blogs: blogs,
+            user_messages: messages,
+            username: user.0,
+            user_id: user_id.0,
+            count: unread_count,
+        };
+        Template::render("user", &context)
+}
 #[get("/<u_id>?<date_count>")]
-pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserOr, user_id: UserId,date_count: DataCount) -> Template {
-        let to_uid = user_id.0;
+pub fn user_page_login_message(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserOr, user_id: UserId,date_count: DataCount) -> Template {
         let a_user = get_user_info(&conn_dsl, u_id);
         let articles = get_user_articles(&conn_pg, u_id);
         let comments = get_user_comments(&conn_pg, u_id);
@@ -105,8 +124,8 @@ pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserO
         let messages = get_user_messages(&conn_pg, u_id);
         if date_count.count != 0 {
             let read_count = date_count.count;
-            let unread_count = get_unread_message_count(&conn_pg, to_uid);
-            update_user_message(&conn_pg,to_uid, read_count);
+            let unread_count = get_unread_message_count(&conn_pg, u_id);
+            update_user_message(&conn_pg,u_id, read_count);
             let context = UserInfo {
                 this_user: a_user,
                 user_articles: articles,
@@ -120,7 +139,7 @@ pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserO
             };
             Template::render("user", &context)
         } else {
-            let unread_count = get_unread_message_count(&conn_pg, to_uid);
+            let unread_count = get_unread_message_count(&conn_pg, u_id);
             let context = UserInfo {
                 this_user: a_user,
                 user_articles: articles,
@@ -134,9 +153,6 @@ pub fn user_page_login(conn_pg: ConnPg, conn_dsl: ConnDsl, u_id: i32,user: UserO
             };
             Template::render("user", &context)
         }
-        
-
-   
 }
 
 
