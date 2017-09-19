@@ -11,6 +11,9 @@ use chrono::{DateTime,Utc};
 use spongedown;
 use diesel::pg::PgConnection;
 use postgres::Connection;
+use std::time::Duration;
+use timeago;
+use utils::get_seconds::get_seconds;
 
 #[derive(Debug, Serialize)]
 pub struct Uarticle {
@@ -23,8 +26,23 @@ pub struct Uarticle {
     pub raw: String,
     pub cooked: String,
     pub created_at: DateTime<Utc>,
+    pub rtime: String,
     pub updated_at: DateTime<Utc>,
     pub username: String,
+}
+#[derive(Debug, Serialize)]
+pub struct Rarticle {
+    pub id: i32,
+    pub uid: i32,
+    pub category: String,
+    pub status: i32,
+    pub comments_count: i32,
+    pub title: String,
+    pub raw: String,
+    pub cooked: String,
+    pub created_at: DateTime<Utc>,
+    pub rtime: String,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize)]
@@ -35,6 +53,7 @@ pub struct Ucomment {
     pub raw: String,
     pub cooked: String,
     pub created_at: DateTime<Utc>,
+    pub rtime: String,
     pub username: String,
 }
 #[derive(Debug,Serialize)]
@@ -45,6 +64,7 @@ pub struct UserComment {
     pub raw: String,
     pub cooked: String,
     pub created_at: DateTime<Utc>,
+    pub rtime: String,
     pub article_id: i32,
     pub article_uid: i32,
     pub article_category: String,
@@ -60,6 +80,7 @@ pub struct UserComment {
 pub struct UserMessage {
     pub message_status: i32,
     pub message_created_at: DateTime<Utc>,
+    pub rtime: String,
     pub comment_raw: String,
     pub comment_cooked: String,
     pub from_uid: i32,
@@ -101,7 +122,7 @@ pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
                            article.cooked, article.created_at, article.updated_at, users.username 
                            FROM article, users WHERE article.uid = users.id ORDER BY article.id DESC", &[]).unwrap()
     {
-        let result = Uarticle {
+        let mut result = Uarticle {
             id: row.get(0),
             uid: row.get(1),
             category: row.get(2),
@@ -111,9 +132,16 @@ pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
             raw: row.get(6),
             cooked: row.get(7),
             created_at: row.get(8),
+            rtime: "".to_string(),
             updated_at: row.get(9),
             username: row.get(10),
         };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
         article_result.push(result);
     }
     article_result
@@ -130,6 +158,7 @@ pub fn get_article_by_aid(conn_pg: &Connection, aid: i32) -> Uarticle {
         raw: "".to_string(),
         cooked: "".to_string(),
         created_at: Utc::now(), 
+        rtime: "".to_string(),
         updated_at: Utc::now(), 
         username: "".to_string(),
     };
@@ -146,9 +175,16 @@ pub fn get_article_by_aid(conn_pg: &Connection, aid: i32) -> Uarticle {
             raw: row.get(6),
             cooked: row.get(7),
             created_at: row.get(8),
+            rtime: "".to_string(),
             updated_at: row.get(9),
             username: row.get(10),
         };
+        let created_at_seconds = get_seconds(article_result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        article_result.rtime = dtime;
     }
     article_result
 }
@@ -164,8 +200,15 @@ pub fn get_comment_by_aid(conn_pg: &Connection, aid: i32) -> Vec<Ucomment> {
             raw: row.get(3),
             cooked: row.get(4),
             created_at: row.get(5),
+            rtime: "".to_string(),
             username: row.get(6),
         };
+        let created_at_seconds = get_seconds(comment_result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        comment_result.rtime = dtime;
         result.push(comment_result);
     }
     result
@@ -276,10 +319,9 @@ pub fn get_uids(conn_pg: &Connection, username: &str) -> Option<i32> {
     to_uid
 }
 
-pub fn get_user_info(conn_dsl: &PgConnection, user_id: i32) -> Option<User> {
+pub fn get_user_info(conn_dsl: &PgConnection, u_id: i32) -> Option<User> {
     use utils::schema::users::dsl::*;
-    let uid = user_id;
-    let user_result =  users.filter(&id.eq(&uid)).load::<User>(conn_dsl);
+    let user_result =  users.filter(&id.eq(&u_id)).load::<User>(conn_dsl);
     let login_user = match user_result {
         Ok(user_s) => match user_s.first() {
             Some(a_user) => Some(a_user.clone()),
@@ -290,13 +332,12 @@ pub fn get_user_info(conn_dsl: &PgConnection, user_id: i32) -> Option<User> {
     login_user
 }
 
-pub fn get_user_articles(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
-    let u_id = user_id;
-    let mut user_articles: Vec<Article> = vec![];
+pub fn get_user_articles(conn_pg: &Connection, u_id: i32) -> Vec<Rarticle> {
+    let mut user_articles: Vec<Rarticle> = vec![];
     for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
                             article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
                            FROM article WHERE article.uid = $1 ORDER BY created_at DESC",&[&u_id]).unwrap() {
-        let article = Article {
+        let mut rarticle = Rarticle {
             id: row.get(0),
             uid: row.get(1),
             category: row.get(2),
@@ -306,19 +347,25 @@ pub fn get_user_articles(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
             raw: row.get(6),
             cooked: row.get(7),
             created_at: row.get(8),
+            rtime: "".to_string(),
             updated_at: row.get(9),
         };
-        user_articles.push(article);
+        let created_at_seconds = get_seconds(rarticle.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        rarticle.rtime = dtime;
+        user_articles.push(rarticle);
     }
     user_articles
 }
-pub fn get_user_blogs(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
-    let u_id = user_id;
-    let mut user_articles: Vec<Article> = vec![];
+pub fn get_user_blogs(conn_pg: &Connection, u_id: i32) -> Vec<Rarticle> {
+    let mut user_blogs: Vec<Rarticle> = vec![];
     for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, 
                             article.comments_count, article.title, article.raw, article.cooked, article.created_at, article.updated_at 
                            FROM article WHERE article.uid = $1 ORDER BY created_at DESC",&[&u_id]).unwrap() {
-        let article = Article {
+        let mut rarticle = Rarticle {
             id: row.get(0),
             uid: row.get(1),
             category: row.get(2),
@@ -328,24 +375,31 @@ pub fn get_user_blogs(conn_pg: &Connection, user_id: i32) -> Vec<Article> {
             raw: row.get(6),
             cooked: row.get(7),
             created_at: row.get(8),
+            rtime: "".to_string(),
             updated_at: row.get(9),
         };
-        user_articles.push(article);
+        let created_at_seconds = get_seconds(rarticle.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        rarticle.rtime = dtime;
+        user_blogs.push(rarticle);
     }
-    user_articles
+    user_blogs
 }
-pub fn get_user_comments(conn_pg: &Connection, user_id: i32) -> Vec<UserComment> {
-    let u_id = user_id;
+pub fn get_user_comments(conn_pg: &Connection, u_id: i32) -> Vec<UserComment> {
     let mut user_comments: Vec<UserComment> = vec![];
     for row in &conn_pg.query("SELECT comment.*, article.* FROM comment, article 
                         where comment.aid = article.id and comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
-        let comment = UserComment {
+        let mut comment = UserComment {
                 id: row.get(0),
                 aid: row.get(1),
                 uid: row.get(2),
                 raw: row.get(3),
                 cooked: row.get(4),
                 created_at: row.get(5),
+                rtime: "".to_string(),
                 article_id: row.get(6),
                 article_uid: row.get(7),
                 article_category: row.get(8),
@@ -357,13 +411,18 @@ pub fn get_user_comments(conn_pg: &Connection, user_id: i32) -> Vec<UserComment>
                 article_created_at: row.get(14),
                 article_updated_at: row.get(15),
         };
+        let created_at_seconds = get_seconds(comment.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        comment.rtime = dtime;
         user_comments.push(comment);
     }
     user_comments
 }
 
-pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage> {
-    let u_id = user_id;
+pub fn get_user_messages(conn_pg: &Connection, u_id: i32) -> Vec<UserMessage> {
     let mut user_messages: Vec<UserMessage> = vec![];
     for row in &conn_pg.query("SELECT message.status, message.created_at, comment.raw, comment.cooked, users.id, users.username,
          users.email, article.id, article.title 
@@ -372,9 +431,10 @@ pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage>
          JOIN article ON article.id = message.aid
          JOIN comment ON comment.id = message.cid
          WHERE to_uid = $1 ORDER BY created_at DESC",&[&u_id]).unwrap() {
-        let message = UserMessage {
+        let mut message = UserMessage {
                 message_status: row.get(0),
                 message_created_at: row.get(1),
+                rtime: "".to_string(),
                 comment_raw: row.get(2),
                 comment_cooked: row.get(3),
                 from_uid: row.get(4),
@@ -383,6 +443,12 @@ pub fn get_user_messages(conn_pg: &Connection, user_id: i32) -> Vec<UserMessage>
                 article_id: row.get(7),
                 article_title: row.get(8),
         };
+        let created_at_seconds = get_seconds(message.message_created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        message.rtime = dtime;
         user_messages.push(message);
     }
     user_messages

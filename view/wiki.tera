@@ -24,11 +24,8 @@
         <nav id="mnav" >
                 <ul>
                     <li >
-                        <a href="/doc">Doc</a>
+                        <a href="/wiki">Wiki</a>
                     </li>
-                    <li >
-                        <a href="/area">Area</a>
-                    </li >
                     {% if username %}
                     <li >
                         <a href="/article/new">New</a>
@@ -189,8 +186,7 @@
         </main>
     
         <span id="nav_left">
-                <li class="menu-item"><a href="/doc">Doc</a></li>
-                <li class="menu-item"><a href="/area">Area</a></li>
+                <li class="menu-item"><a href="/wiki">Wiki</a></li>
         </span>
         {% if username %}
         <span id="primary_nav">

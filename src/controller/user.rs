@@ -10,7 +10,7 @@ use rocket::http::RawStr;
 use std::collections::HashMap;
 use rocket::outcome::IntoOutcome;
 use chrono::prelude::*;
-use handler::content::{UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_blogs,get_user_messages,get_unread_message_count,update_user_message};
+use handler::content::{Rarticle,UserComment,UserMessage,get_user_info,get_user_articles,get_user_comments,get_user_blogs,get_user_messages,get_unread_message_count,update_user_message};
 use chrono::{DateTime,Utc};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
@@ -67,9 +67,9 @@ struct UserLogin {
 #[derive(Serialize)]
 struct UserInfo {
     this_user: Option<User>,
-    user_articles: Vec<Article>,
+    user_articles: Vec<Rarticle>,
     user_comments: Vec<UserComment>,
-    user_blogs: Vec<Article>,
+    user_blogs: Vec<Rarticle>,
     user_messages: Vec<UserMessage>,
     username: String,
     user_id: i32,

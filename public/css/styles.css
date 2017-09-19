@@ -421,6 +421,26 @@ form #new button {
     color: #EC0DBC;
 }
 
+#myBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 40px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #349E64; /* Set a background color */
+    font-weight: bold;
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 100%; /* Rounded corners */
+}
+
+#myBtn:hover {
+    background-color: #999; /* Add a dark-grey background on hover */
+}
+
 /* ---------------------desk -------nav ---------------------- */ 
 
 #primary_nav, #nav_left, #nav_right {
@@ -440,7 +460,7 @@ form #new button {
         display: block; 
         position: fixed;
         height: auto;
-        left: 122px;
+        left: 126px;
         font-size: 18px;
         line-height: 50px;
         font-weight: 700;

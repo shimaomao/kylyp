@@ -47,41 +47,21 @@ pub fn index_user(conn_pg: ConnPg, user: UserOr, user_id: UserId) -> Template {
     Template::render("index", &context)
 }
 
-#[get("/doc",rank = 2)]
-pub fn doc() -> Template {
+#[get("/wiki",rank = 2)]
+pub fn wiki() -> Template {
     let mut context = HashMap::new();
     context.insert("No login user", "".to_string());
-    Template::render("doc", &context)
+    Template::render("wiki", &context)
 }
 
-#[get("/doc")]
-pub fn doc_user(user: UserOr, user_id: UserId) -> Template {
+#[get("/wiki")]
+pub fn wiki_user(user: UserOr, user_id: UserId) -> Template {
     let context = TemplateDoc {
         username: user.0,
         user_id: user_id.0,
     };
-    Template::render("doc", &context)
+    Template::render("wiki", &context)
 }
-
-#[get("/area",rank = 2)]
-pub fn area() -> Template {
-    let mut context = HashMap::new();
-    context.insert("No login user", "".to_string());
-    Template::render("area", &context)
-}
-
-#[get("/area")]
-pub fn area_user(user: UserOr, user_id: UserId) -> Template {
-    let context = TemplateDoc {
-        username: user.0,
-        user_id: user_id.0,
-    };
-    Template::render("area", &context)
-}
-
-
-
-
 
 
 
