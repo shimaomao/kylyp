@@ -24,11 +24,11 @@ welcome to contribute !
 
 <img alt="Home" height="500" src="https://raw.githubusercontent.com/mcux/kylyp/master/public/2017-09-20%2009-49-12%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
 
-<img alt="Home" height="500" src="https://raw.githubusercontent.com/mcux/kylyp/master/public/2017-09-15%2010-00-12%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
+<img alt="Article" height="500" src="https://raw.githubusercontent.com/mcux/kylyp/master/public/2017-09-15%2010-00-12%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
 
 **Mobile**
 
-<img alt="Home" height="500" src="https://raw.githubusercontent.com/mcux/kylyp/master/public/2017-09-16%2017-48-55%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
+<img alt="Mobile" height="500" src="https://raw.githubusercontent.com/mcux/kylyp/master/public/2017-09-20%2018-17-55%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png">
 
 
 ### License
