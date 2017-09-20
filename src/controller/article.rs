@@ -39,21 +39,15 @@ pub struct DataComment {
 pub fn article_nouser(conn_pg: ConnPg, conn_dsl: ConnDsl, aid: i32) -> Template {
     let article_data = get_article_by_aid(&conn_pg, aid );
     let comment_data = get_comment_by_aid(&conn_pg, aid);
-    if article_data.category == "Blog" {
-        let context = TemplateContext {
-            article: article_data,
-            comments: comment_data,
-            username: "".to_string(),
-            user_id: 0,
-        };
+    let context = TemplateContext {
+        article: article_data,
+        comments: comment_data,
+        username: "".to_string(),
+        user_id: 0,
+    };
+    if context.article.category == "Blog" {
         Template::render("blog", &context)
     }else{
-        let context = TemplateContext {
-            article: article_data,
-            comments: comment_data,
-            username: "".to_string(),
-            user_id: 0,
-        };
         Template::render("article", &context)
     }
 }
@@ -62,21 +56,15 @@ pub fn article_nouser(conn_pg: ConnPg, conn_dsl: ConnDsl, aid: i32) -> Template 
 pub fn article(conn_pg: ConnPg, conn_dsl: ConnDsl, user: UserOr, aid: i32, user_id: UserId) -> Template {
     let article_data = get_article_by_aid(&conn_pg, aid);
     let comment_data = get_comment_by_aid(&conn_pg, aid);
-    if article_data.category == "Blog" {
-        let context = TemplateContext {
-            article: article_data,
-            comments: comment_data,
-            username: user.0,
-            user_id: user_id.0,
-        };
+    let context = TemplateContext {
+        article: article_data,
+        comments: comment_data,
+        username: user.0,
+        user_id: user_id.0,
+    };
+    if context.article.category == "Blog" {
         Template::render("blog", &context)
     }else{
-        let context = TemplateContext {
-            article: article_data,
-            comments: comment_data,
-            username: user.0,
-            user_id: user_id.0,
-        };
         Template::render("article", &context)
     }
     
