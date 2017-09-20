@@ -148,7 +148,6 @@ main {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-
 #content blockquote {
     padding: 0 1em;
     color: #777;
@@ -174,6 +173,7 @@ article {
     margin: 0 10px 10px 0;
     padding: 0 0 4px 0;
 }
+
 article #top #title {
     margin: -9px -22px 0 -11px;
     background-color: #D8FAE8;
@@ -382,27 +382,18 @@ form #new button {
 #tab1 #menu-title li.off{
     background:#FFFFFF;color:#336699;font-weight:bold;
 }
-#user-info {
-    border-bottom: 1px solid #d8d8d8;
-    padding: 10px 11px 11px 11px;
-    margin: 0 0 1px 0;
-    background-color: #ffffff;
-}
 #user-info #blog{
     border-bottom: 1px solid #d8d8d8; 
-    margin-bottom: 5px;  
-    padding-bottom: 5px;
+    padding: 11px 11px 11px 11px;
 }
 #user-info #blog a {
     font-weight: bold;
     font-size: 17px;
 }
 #user-info #blog #info {
-    display: inline-block;
     font-size: 13px;
 }
 #user-info #blog #comment-info {
-    display: inline-block;
     font-size: 16px;
 }
 #aside {
@@ -496,7 +487,7 @@ form #new button {
         background-color:#C5F5DC;
     }
     #primary_nav {
-        margin-right: 155px;
+        margin-right: 165px;
     }
     #primary_nav ul li {
         display: inline-block; 

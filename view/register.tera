@@ -99,6 +99,6 @@
                 <li ><a href="/user/login">Login</a></li>
         </span>
     </div>
-    <script src="../js/nav.js"></script>
+    <script src="../js/nav.js" async="async"></script>
 </body>
 </html>

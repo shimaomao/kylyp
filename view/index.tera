@@ -14,7 +14,6 @@
  
     <!-- Favicons-->
     <link rel="shortcut icon" href="../img/favicon.ico">
-    <script src="../js/tabs-index.js" async="async"></script>
 </head>
 <body >
     <div id="all">
@@ -64,7 +63,7 @@
                                 {% if data.category == "Announcement" %}
                                     <div id="annu">
                                         <div>
-                                            <span id="annu-title"> <a href="/article/{{ data.id }}" title="{{ data.title }}"> {{ data.title }} </a></span>
+                                            <span id="annu-title"> <a href="/article/{{ data.id }}" title="{{ data.title }}"> {{ data.title }}&hellip; </a></span>
                                             <span id="right-info">{{ data.comments_count }}</span>
                                         </div>
                                         <span id="info" style="color: #EC0DBC;">{{ data.category }}</span>  •  <span id="info"><a href="/user/{{data.uid}}">{{ data.username }}</a></span> •   
@@ -251,7 +250,8 @@
         </span>
         {% endif %}
     </div>
-    <script src="../js/nav.js"></script>
-    <script src="../js/gtop.js"></script>
+    <script src="../js/nav.js" async="async"></script>
+    <script src="../js/gtop.js" async="async"></script>
+    <script src="../js/tabs-index.js" async="async"></script>
 </body>
 </html>

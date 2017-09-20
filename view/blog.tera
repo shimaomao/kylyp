@@ -15,9 +15,6 @@
     <!-- Favicons-->
     <link rel="shortcut icon" href="../img/favicon.ico">
     <link rel="stylesheet" href="../css/default.css">
-    <script src="../js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    
 </head>
 <body >
     <div id="all">
@@ -138,8 +135,8 @@
         </span>
         {% endif %}
     </div>
-    <script src="../js/nav.js"></script>
-    
-    
+    <script src="../js/nav.js" async="async"></script>
+    <script src="../js/highlight.pack.js" async="async"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>
