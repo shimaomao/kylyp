@@ -49,36 +49,30 @@
         </nav>
         <main id="main">
             <div id="content" >
-                <div class="re-desk-75 re-table-100 ">
-                    <article >
-                        <div id="top">
-                            <h3>
-                                <h3>WARING!</h3> &emsp;404: Hey! There's nothing here. you must login first or the page at {{ path }} does not exist!
-                            </h3>
+                <div style="width: 88%; margin:0 auto; ">
+                    <div id="more">
+                        <div id="title">
+                            <h3> There will be Cool Things </h3>
+                            <span id="info">Author</span>&emsp;
+                            <span id="info">2017-9-11</span>
                         </div>
-                    </article>
-                </div>
-
-
-                <footer class="re-desk-25 re-table-100" >
-                    <div id="aside">
-                        <div >
-                            <ul >
-                                <a class="Footer-link" href="" rel="noopener">About</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Help</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Copyright</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Cookies</a> &nbsp; 
-                                <a class="Footer-link" href="" rel="noopener">ADs</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Mark</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Blog</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Application</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Job</a> &nbsp;
-                                <a class="Footer-link" href="" rel="noopener">Developer</a>
-                                <li class="Footer-item Footer-copyright copyright">&copy; 2017 Rust</li>
+                        <div id="content">
+                            <ul>
+                                <h3 style="color:aqua;"><a href="">Cool Things</a></h3>
+                            </ul>
+                            <ul>
+                                    <li><a href="">Cool Things</a></li>
+                                    <li>
+                                        <ul>
+                                            <li><a href="">Cool Things</a></li>
+                                            <li><a href="">Cool Things</a></li>
+                                            <li><a href="">Cool Things</a></li>
+                                        </ul>
+                                    </li>
                             </ul>
                         </div>
                     </div>
-                </footer>
+                </div>
             </div>
         </main>
     

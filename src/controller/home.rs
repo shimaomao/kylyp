@@ -63,7 +63,21 @@ pub fn wiki_user(user: UserOr, user_id: UserId) -> Template {
     Template::render("wiki", &context)
 }
 
+#[get("/more",rank = 2)]
+pub fn more() -> Template {
+    let mut context = HashMap::new();
+    context.insert("No login user", "".to_string());
+    Template::render("more", &context)
+}
 
+#[get("/more")]
+pub fn more_user(user: UserOr, user_id: UserId) -> Template {
+    let context = TemplateDoc {
+        username: user.0,
+        user_id: user_id.0,
+    };
+    Template::render("more", &context)
+}
 
 
 #[get("/<file..>",rank = 9)]

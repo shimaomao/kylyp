@@ -26,6 +26,9 @@
                     <li >
                         <a href="/wiki">Wiki</a>
                     </li>
+                    <li >
+                        <a href="/more">More</a>
+                    </li>
                     {% if username %}
                     <li >
                         <a href="/article/new">New</a>
@@ -92,6 +95,7 @@
     
         <span id="nav_left">
                 <li class="menu-item"><a href="/wiki">Wiki</a></li>
+                <li class="menu-item"><a href="/more">More</a></li>
         </span>
         
         <span id="nav_right">

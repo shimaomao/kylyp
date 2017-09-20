@@ -348,8 +348,26 @@ article #top button {
 #navi ul li {
     margin-left: 22px;
 }
-
-
+/*--------------------------------- more ------------------------------- */
+#more {
+    box-shadow: 0 1px 2px #999;
+    margin: 0 10px 15px 0;
+}
+#more #title {
+    box-shadow: 0 -1px 1px rgba(0,0,0,0.12), 0 -1px 1px rgba(0,0,0,0.24);
+    margin: 2px 0 0 0;
+    padding: 10px 10px 10px 10px;
+    background-color: #D8FAE8;
+}
+#more #title #info {
+    display: inline-block;
+    font-size: 14px;
+}
+#more #content {
+    margin: 11px 10px 11px 10px;
+    padding: 5px 5px 15px 5px;
+    font-size: 16px;
+}
 /*--------------------------------- new ------------------------------- */
 #new-top {
     margin: 0 10px 10px 0;
@@ -447,7 +465,7 @@ form #new button {
     display: none; /* Hidden by default */
     position: fixed; /* Fixed/sticky position */
     bottom: 20px; /* Place the button at the bottom of the page */
-    right: 40px; /* Place the button 30px from the right */
+    right: 30px; /* Place the button 30px from the right */
     z-index: 99; /* Make sure it does not overlap */
     border: none; /* Remove borders */
     outline: none; /* Remove outline */
