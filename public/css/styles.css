@@ -104,7 +104,7 @@ nav ul li a {
 
 main {
     flex: 1;  /* 1 代表盡可能最大，會自動填滿除了 header footer 以外的空間 */
-    margin: 0 9% 22px 9%;
+    margin: 0 0 22px 0;
 } 
 #content {
     margin: 15px 10px 0 10px;
@@ -475,6 +475,10 @@ form #new button {
 
 @media only screen and (min-width: 768px) {
  
+    main {
+        flex: 1;  /* 1 代表盡可能最大，會自動填滿除了 header footer 以外的空間 */
+        margin: 0 9% 22px 9%;
+    } 
     #menu, #mnav {
         display: none;
     }
