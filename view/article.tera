@@ -75,7 +75,7 @@
                     <div id="reply">
                         {% if username %}
                             <div id="write"> Write comment in makedwon! </div>
-                            <textarea name="raw" placeholder="if you want @somebody for send a message in your comment, the rule is: 
+                            <textarea class="ans_con" placeholder="if you want @somebody for send a message in your comment, the rule is: 
                             1: the @ symbol can't be first position at line.(like: @somebodyxxxxx)
                             2: one position before the @ symbol can't be space(like: xxxxx @somebodyxxxxx)."></textarea>
                             <button type="submit" id="submit" data-aid="{{ article.id }}"><span class="tip"> Comment </span></button>
