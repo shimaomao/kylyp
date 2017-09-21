@@ -310,7 +310,7 @@ pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid
 pub fn get_uids(conn_pg: &Connection, username: &str) -> Option<i32> {
 
     let mut to_uid: Option<i32> = Some(0);
-    for row in &conn_pg.query("SELECT id FROM user WHERE username = $1",&[&username]).unwrap() {
+    for row in &conn_pg.query("SELECT id FROM users WHERE username = $1",&[&username]).unwrap() {
         let uid = ToUid {
             id: row.get(0),
         };
