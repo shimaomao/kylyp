@@ -65,16 +65,6 @@ pub struct UserComment {
     pub cooked: String,
     pub created_at: DateTime<Utc>,
     pub rtime: String,
-    pub article_id: i32,
-    pub article_uid: i32,
-    pub article_category: String,
-    pub article_status: i32,
-    pub article_comments_count: i32,
-    pub article_title: String,
-    pub article_raw: String,
-    pub article_cooked: String,
-    pub article_created_at: DateTime<Utc>,
-    pub article_updated_at: DateTime<Utc>,
 }
 #[derive(Debug,Serialize)]
 pub struct UserMessage {
@@ -362,8 +352,8 @@ pub fn get_user_blogs(conn_pg: &Connection, u_id: i32) -> Vec<Rarticle> {
 }
 pub fn get_user_comments(conn_pg: &Connection, u_id: i32) -> Vec<UserComment> {
     let mut user_comments: Vec<UserComment> = vec![];
-    for row in &conn_pg.query("SELECT comment.*, article.* FROM comment, article 
-                        where comment.aid = article.id and comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
+    for row in &conn_pg.query("SELECT comment.* FROM comment, article 
+                        where comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
         let mut comment = UserComment {
                 id: row.get(0),
                 aid: row.get(1),
@@ -372,16 +362,6 @@ pub fn get_user_comments(conn_pg: &Connection, u_id: i32) -> Vec<UserComment> {
                 cooked: row.get(4),
                 created_at: row.get(5),
                 rtime: "".to_string(),
-                article_id: row.get(6),
-                article_uid: row.get(7),
-                article_category: row.get(8),
-                article_status: row.get(9),
-                article_comments_count: row.get(10),
-                article_title: row.get(11),
-                article_raw: row.get(12),
-                article_cooked: row.get(13),
-                article_created_at: row.get(14),
-                article_updated_at: row.get(15),
         };
         let created_at_seconds = get_seconds(comment.created_at);
         let rnow = Utc::now();
