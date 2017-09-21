@@ -91,10 +91,6 @@ pub struct UserMessage {
 }
 
 #[derive(Debug, Deserialize)]
-struct Setting {
-    development: Development,
-}
-#[derive(Debug, Deserialize)]
 struct Development {
     address: Option<String>,
     port: Option<String>,
@@ -106,15 +102,6 @@ struct ToUid{
     id: i32,
 }
 
-impl Setting {
-    pub fn new(& mut self) -> Result<Self, ConfigError> {
-        let mut cfg = Config::new();
-        cfg.merge(File::with_name(CFG_DEFAULT))?;
-        self.development.address = cfg.get("development.address").ok();
-        self.development.port = cfg.get("development.port").ok();
-        cfg.try_into()
-    }
-}
 
 pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
     let mut article_result: Vec<Uarticle> = vec![];
@@ -237,20 +224,6 @@ pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid
         address: Some("".to_string()),
         port: Some("".to_string()),
     };
-    let mut path =  Setting { development: env};
-    let f_path = Setting::new(& mut path).unwrap();
-    let mut forum_path = "".to_string();
-    {
-        if let Some(address) = f_path.development.address { 
-            forum_path =  address;
-        };
-    }
-    let mut app_path = "http://".to_string() + &forum_path + &":".to_string();
-    {
-        if let Some(port) = f_path.development.port { 
-            app_path +=  &port;
-        };
-    }
     use utils::schema::comment;
     let re = Regex::new(r"\B@([\da-zA-Z_]+)").unwrap();
     let mut to_uids: Vec<i32> = Vec::new();
@@ -258,9 +231,8 @@ pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid
         match get_uids(conn_pg, cap.at(1).unwrap()) {
             Some(user_id) => {
                 to_uids.push(user_id);
-                format!("[@{}]({}{}{})",
+                format!("[@{}]({}{})",
                         cap.at(1).unwrap(),
-                        app_path,
                         "/user/",
                         user_id)
             },
@@ -310,7 +282,7 @@ pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid
 pub fn get_uids(conn_pg: &Connection, username: &str) -> Option<i32> {
 
     let mut to_uid: Option<i32> = Some(0);
-    for row in &conn_pg.query("SELECT id FROM user WHERE username = $1",&[&username]).unwrap() {
+    for row in &conn_pg.query("SELECT id FROM users WHERE username = $1",&[&username]).unwrap() {
         let uid = ToUid {
             id: row.get(0),
         };
