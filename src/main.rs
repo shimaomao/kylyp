@@ -5,7 +5,6 @@
 #![feature(custom_attribute)]
 #![feature(decl_macro)]
 #![recursion_limit = "128"]
-#![feature(const_fn)]
 
 #[macro_use]
 extern crate serde_derive;
