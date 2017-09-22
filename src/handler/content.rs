@@ -83,15 +83,15 @@ pub struct UserMessage {
     pub article_id: i32,
     pub article_title: String,
 }
-
-
 struct CommentId{
     id: i32,
 }
 struct ToUid{
     id: i32,
 }
-
+struct UnreadStatus{
+    status: i32,
+}
 
 pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
     let mut article_result: Vec<Uarticle> = vec![];
@@ -410,20 +410,11 @@ pub fn get_user_messages(conn_pg: &Connection, u_id: i32) -> Vec<UserMessage> {
 }
 
 pub fn get_unread_message_count(conn_pg: &Connection, to_uid: i32) -> i32 {
-    let mut all_count: Vec<Message> = vec![];
+    let mut all_count: Vec<UnreadStatus> = vec![];
     let mut read_count: i32 = 0;
-    for row in &conn_pg.query("SELECT * from message where to_uid = $1 and status = $2", &[&to_uid,&message_status::INIT]).unwrap() {
-        let message = Message {
-                id: row.get(0),
-                aid: row.get(1),
-                cid: row.get(2),
-                from_uid: row.get(3),
-                to_uid: row.get(4),
-                raw: row.get(5),
-                cooked: row.get(6),
-                mode: row.get(7),
-                status: row.get(8),
-                created_at: row.get(9),
+    for row in &conn_pg.query("SELECT message.status from message where to_uid = $1 and status = $2", &[&to_uid,&message_status::INIT]).unwrap() {
+        let message = UnreadStatus {
+                status: row.get(0),
         };
         read_count += message.status;
         all_count.push(message);
