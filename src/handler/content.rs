@@ -58,13 +58,17 @@ pub struct Ucomment {
 }
 #[derive(Debug,Serialize)]
 pub struct UserComment {
-    pub id: i32,
-    pub aid: i32,
-    pub uid: i32,
     pub raw: String,
     pub cooked: String,
     pub created_at: DateTime<Utc>,
     pub rtime: String,
+    pub article_id: i32,
+    pub article_category: String,
+    pub article_status: i32,
+    pub article_comments_count: i32,
+    pub article_title: String,
+    pub article_raw: String,
+    pub article_cooked: String,
 }
 #[derive(Debug,Serialize)]
 pub struct UserMessage {
@@ -80,11 +84,7 @@ pub struct UserMessage {
     pub article_title: String,
 }
 
-#[derive(Debug, Deserialize)]
-struct Development {
-    address: Option<String>,
-    port: Option<String>,
-}
+
 struct CommentId{
     id: i32,
 }
@@ -210,10 +210,7 @@ pub fn add_article_by_uid<'a>(conn_dsl: &PgConnection, uid: i32, category: &'a s
 }
         
 pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid: i32, uid: i32, raw: &'a str,) {
-    let env = Development {
-        address: Some("".to_string()),
-        port: Some("".to_string()),
-    };
+   
     use utils::schema::comment;
     let re = Regex::new(r"\B@([\da-zA-Z_]+)").unwrap();
     let mut to_uids: Vec<i32> = Vec::new();
@@ -352,16 +349,22 @@ pub fn get_user_blogs(conn_pg: &Connection, u_id: i32) -> Vec<Rarticle> {
 }
 pub fn get_user_comments(conn_pg: &Connection, u_id: i32) -> Vec<UserComment> {
     let mut user_comments: Vec<UserComment> = vec![];
-    for row in &conn_pg.query("SELECT comment.* FROM comment, article 
-                        where comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
+    for row in &conn_pg.query("SELECT comment.raw, comment.cooked, comment.created_at, 
+                               article.id, article.category, article.status, article.comments_count, article.title, article.raw, article.cooked
+                               FROM comment, article 
+                        where comment.aid = article.id and comment.uid = $1 order by comment.id DESC ",&[&u_id]).unwrap() {
         let mut comment = UserComment {
-                id: row.get(0),
-                aid: row.get(1),
-                uid: row.get(2),
-                raw: row.get(3),
-                cooked: row.get(4),
-                created_at: row.get(5),
+                raw: row.get(0),
+                cooked: row.get(1),
+                created_at: row.get(2),
                 rtime: "".to_string(),
+                article_id: row.get(3),
+                article_category: row.get(4),
+                article_status: row.get(5),
+                article_comments_count: row.get(6),
+                article_title: row.get(7),
+                article_raw: row.get(8),
+                article_cooked: row.get(9),
         };
         let created_at_seconds = get_seconds(comment.created_at);
         let rnow = Utc::now();
