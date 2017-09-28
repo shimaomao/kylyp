@@ -14,6 +14,7 @@ use postgres::Connection;
 use std::time::Duration;
 use timeago;
 use utils::get_seconds::get_seconds;
+use controller::home::PAGE_SIZE;
 
 #[derive(Debug, Serialize)]
 pub struct Uarticle {
@@ -92,12 +93,81 @@ struct ToUid{
 struct UnreadStatus{
     status: i32,
 }
-
-pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
+pub fn article_count(conn_pg: &Connection) -> i32 {
+    struct Aid {
+        id: i32,
+    }
+    let mut counts: Vec<Aid> = vec![];
+    for row in &conn_pg.query("SELECT article.id FROM article ", &[]).unwrap()
+    {
+        let a_id = Aid {
+            id: row.get(0),
+        };
+        counts.push(a_id);
+    }
+    counts.len() as i32
+}
+pub fn article_count_tag<'a>(conn_pg: &Connection, tag: &'a str) -> i32 {
+    struct Aid {
+        id: i32,
+    }
+    let mut counts: Vec<Aid> = vec![];
+    for row in &conn_pg.query("SELECT article.id FROM article WHERE article.category = $1", &[&tag]).unwrap()
+    {
+        let a_id = Aid {
+            id: row.get(0),
+        };
+        counts.push(a_id);
+    }
+    counts.len() as i32
+}
+pub fn article_count_no_comment(conn_pg: &Connection) -> i32 {
+    struct Aid {
+        id: i32,
+    }
+    let mut counts: Vec<Aid> = vec![];
+    for row in &conn_pg.query("SELECT article.id FROM article WHERE article.comments_count = 0", &[]).unwrap()
+    {
+        let a_id = Aid {
+            id: row.get(0),
+        };
+        counts.push(a_id);
+    }
+    counts.len() as i32
+}
+pub fn article_list_no_comment(conn_pg: &Connection, page: i32) -> Vec<Uarticle> {
+    let page = page as i64;
+    let p_size = PAGE_SIZE as i64;
     let mut article_result: Vec<Uarticle> = vec![];
     for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
                            article.cooked, article.created_at, article.updated_at, users.username 
-                           FROM article, users WHERE article.uid = users.id ORDER BY article.id DESC", &[]).unwrap()
+                           FROM article, users WHERE article.uid = users.id AND article.category = 'Announcement' ORDER BY article.id DESC ", &[]).unwrap()
+    {
+        let mut result = Uarticle {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            rtime: "".to_string(),
+            updated_at: row.get(9),
+            username: row.get(10),
+        };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
+        article_result.push(result);
+    }
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
+                           article.cooked, article.created_at, article.updated_at, users.username 
+                           FROM article, users WHERE article.uid = users.id AND article.comments_count = 0 AND article.category != 'Announcement' ORDER BY article.id DESC limit $1 OFFSET $2", &[&p_size, &((page - 1) * p_size)]).unwrap()
     {
         let mut result = Uarticle {
             id: row.get(0),
@@ -123,7 +193,123 @@ pub fn article_list(conn_pg: &Connection) -> Vec<Uarticle> {
     }
     article_result
 }
-
+pub fn article_list(conn_pg: &Connection, page: i32) -> Vec<Uarticle> {
+    let page = page as i64;
+    let p_size = PAGE_SIZE as i64;
+    let mut article_result: Vec<Uarticle> = vec![];
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
+                           article.cooked, article.created_at, article.updated_at, users.username 
+                           FROM article, users WHERE article.uid = users.id AND article.category = 'Announcement' ORDER BY article.id DESC ", &[]).unwrap()
+    {
+        let mut result = Uarticle {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            rtime: "".to_string(),
+            updated_at: row.get(9),
+            username: row.get(10),
+        };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
+        article_result.push(result);
+    }
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
+                           article.cooked, article.created_at, article.updated_at, users.username 
+                           FROM article, users WHERE article.uid = users.id AND article.category != 'Announcement' ORDER BY article.id DESC limit $1 OFFSET $2", &[&p_size, &((page - 1) * p_size)]).unwrap()
+    {
+        let mut result = Uarticle {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            rtime: "".to_string(),
+            updated_at: row.get(9),
+            username: row.get(10),
+        };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
+        article_result.push(result);
+    }
+    article_result
+}
+pub fn article_list_tag<'a>(conn_pg: &Connection, page: i32, tag: &'a str) -> Vec<Uarticle> {
+    let page = page as i64;
+    let p_size = PAGE_SIZE as i64;
+    let mut article_result: Vec<Uarticle> = vec![];
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
+                           article.cooked, article.created_at, article.updated_at, users.username 
+                           FROM article, users WHERE article.uid = users.id AND article.category = 'Announcement' ORDER BY article.id DESC ", &[]).unwrap()
+    {
+        let mut result = Uarticle {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            rtime: "".to_string(),
+            updated_at: row.get(9),
+            username: row.get(10),
+        };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
+        article_result.push(result);
+    }
+    for row in &conn_pg.query("SELECT article.id, article.uid, article.category, article.status, article.comments_count, article.title, article.raw,
+                           article.cooked, article.created_at, article.updated_at, users.username 
+                           FROM article, users WHERE article.uid = users.id AND  article.category = $1 
+                           ORDER BY article.id DESC limit $2 OFFSET $3", &[&tag, &p_size, &((page - 1) * p_size)]).unwrap()
+    {
+        let mut result = Uarticle {
+            id: row.get(0),
+            uid: row.get(1),
+            category: row.get(2),
+            status: row.get(3),
+            comments_count: row.get(4),
+            title: row.get(5),
+            raw: row.get(6),
+            cooked: row.get(7),
+            created_at: row.get(8),
+            rtime: "".to_string(),
+            updated_at: row.get(9),
+            username: row.get(10),
+        };
+        let created_at_seconds = get_seconds(result.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        result.rtime = dtime;
+        article_result.push(result);
+    }
+    article_result
+}
 pub fn get_article_by_aid(conn_pg: &Connection, aid: i32) -> Uarticle {
     let mut article_result = Uarticle {
         id: 0,
@@ -209,7 +395,7 @@ pub fn add_article_by_uid<'a>(conn_dsl: &PgConnection, uid: i32, category: &'a s
     diesel::insert(&new_article).into(article::table).execute(conn_dsl).expect("Error saving new list");
 }
         
-pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid: i32, uid: i32, raw: &'a str,) {
+pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid: i32, uid: i32, raw: &'a str) {
    
     use utils::schema::comment;
     let re = Regex::new(r"\B@([\da-zA-Z_]+)").unwrap();

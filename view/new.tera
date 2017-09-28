@@ -64,7 +64,7 @@
                                             <option value="Topic">Topic</option>
                                             <option value="Share">Share</option>
                                             <option value="Article">Article</option>
-                                            <option value="QAF">QAF</option>
+                                            <option value="FAQ">FAQ</option>
                                             <option value="Job">Job</option>
                                             <option value="Blog">Blog</option>
                                         </select>
@@ -75,7 +75,7 @@
                                             <option value="Topic">Topic</option>
                                             <option value="Share">Share</option>
                                             <option value="Article">Article</option>
-                                            <option value="QAF">QAF</option>
+                                            <option value="FAQ">FAQ</option>
                                             <option value="Job">Job</option>
                                             <option value="Blog">Blog</option>
                                         </select>

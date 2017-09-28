@@ -26,6 +26,7 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate r2d2_postgres;
 extern crate timeago;
+extern crate form_checker;
 
 #[macro_use]
 mod controller;
@@ -46,12 +47,12 @@ fn main() {
     rocket::ignite()
         .manage(pool_dsl)
         .manage(pool_pg)
-        .mount("/", routes![home::public,home::index_user,home::index,home::wiki_user,home::wiki,home::more_user,home::more])
+        .mount("/", routes![home::public,home::index_user_page,home::index_user,home::index_page,home::index,home::index_user_page_tag,home::index_user_tag,home::index_page_tag,home::index_tag,home::wiki_user,home::wiki,home::more_user,home::more])
         .mount("/user",routes![user::login_register,user::register,user::register_post,
                                user::login_user,user::login,user::login_post,user::logout,user::user_page_login_message,user::user_page_login,user::user_page])
         .mount("/article",routes![article::article,article::add_comment,article::article_nouser,article::new,article::add_article])
         .attach(Template::fairing())
-        .catch(errors![home::not_found])
+        .catch(catchers![home::not_found])
         .launch();
 }
 

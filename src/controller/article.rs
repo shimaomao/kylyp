@@ -6,7 +6,8 @@ use handler::content::{ get_article_by_aid,get_comment_by_aid,add_comment_by_aid
 use handler::content::{ Ucomment,Uarticle,article_list,add_article_by_uid};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
-use model;
+use form_checker::{Validator, Checker, Rule, I64, CheckerOption};
+
 
 #[derive(Debug,Serialize)]
 struct TemplateContext {
@@ -98,7 +99,8 @@ fn add_article(conn_pg: ConnPg, conn_dsl: ConnDsl, user: UserOr, user_id: UserId
     let title = &data.title;
     let raw = &data.raw;
     add_article_by_uid(&conn_dsl, uid, &category, &title, &raw);
-    let datas = article_list(&conn_pg);
+    let page: i32 = 1;
+    let datas = article_list(&conn_pg,page);
     let context = TemplateArticle {
         datas: datas,
         username: user.0,
