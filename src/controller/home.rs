@@ -6,10 +6,9 @@ use rocket_contrib::Template;
 use controller::user::{UserId,UserOr};
 use handler::content::{Uarticle,article_count,article_count_tag,article_count_no_comment,article_list_no_comment,article_list,article_list_tag,get_unread_message_count};
 use model::pg::ConnPg;
-use form_checker::{Validator, Checker, Rule, I64, CheckerOption};
 
 
-pub const PAGE_SIZE: i32 = 5;
+pub const PAGE_SIZE: i32 = 18;
 
 #[derive(Serialize)]
 struct TemplateContext {

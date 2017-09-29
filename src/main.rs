@@ -26,7 +26,6 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate r2d2_postgres;
 extern crate timeago;
-extern crate form_checker;
 
 #[macro_use]
 mod controller;

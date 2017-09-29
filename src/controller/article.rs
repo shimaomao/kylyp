@@ -6,7 +6,6 @@ use handler::content::{ get_article_by_aid,get_comment_by_aid,add_comment_by_aid
 use handler::content::{ Ucomment,Uarticle,article_list,add_article_by_uid};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
-use form_checker::{Validator, Checker, Rule, I64, CheckerOption};
 
 
 #[derive(Debug,Serialize)]
