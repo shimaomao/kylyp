@@ -98,12 +98,12 @@
                          <ul id="pagination">
                             <li>
                                 <a href="/{{tag}}?page={{previous_page}}" aria-label="Previous">
-                                    <span aria-hidden="true">上一页</span>
+                                    <span aria-hidden="true">Previous</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/{{tag}}?page=1" >
-                                    <span aria-hidden="true">首页</span>
+                                    <span aria-hidden="true">First</span>
                                 </a>
                             </li>
                             <li>
@@ -126,12 +126,12 @@
                             </li>
                             <li>
                                 <a href="/{{tag}}?page={{ page_count }}" >
-                                    <span aria-hidden="true">尾页</span>
+                                    <span aria-hidden="true">Last</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/{{tag}}?page={{next_page}}" aria-label="Next">
-                                    <span aria-hidden="true">下一页</span>
+                                    <span aria-hidden="true">Next</span>
                                 </a>
                             </li>  
                         </ul>       

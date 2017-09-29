@@ -23,6 +23,10 @@ struct TemplateContext {
     page_count: i32,
 }
 #[derive(Serialize)]
+struct TemplateWiki {
+    wiki: WikiData,
+}
+#[derive(Serialize)]
 struct TemplateDoc {
     username: String,
     user_id: i32,
@@ -314,6 +318,11 @@ pub fn index_user_page(conn_pg: ConnPg, user: UserOr, user_id: UserId, data_page
 }
 #[get("/wiki",rank = 2)]
 pub fn wiki() -> Template {
+    // let wiki_data = get_wiki_by_wid(&conn_pg, wid );
+    // let context = TemplateWiki {
+    //     wiki: WikiData,
+    // };
+
     let mut context = HashMap::new();
     context.insert("No login user", "".to_string());
     Template::render("wiki", &context)
