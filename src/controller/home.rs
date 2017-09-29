@@ -9,7 +9,7 @@ use model::pg::ConnPg;
 use form_checker::{Validator, Checker, Rule, I64, CheckerOption};
 
 
-pub const PAGE_SIZE: i32 = 15;
+pub const PAGE_SIZE: i32 = 5;
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -21,6 +21,7 @@ struct TemplateContext {
     previous_page: i32,
     next_page: i32,
     tag: String,
+    page_count: i32,
 }
 #[derive(Serialize)]
 struct TemplateDoc {
@@ -70,6 +71,7 @@ pub fn index_tag(conn_pg: ConnPg, tag: String) -> Template {
         previous_page: previous_page,
         next_page: next_page,
         tag: tag,
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -108,6 +110,7 @@ pub fn index_page_tag(conn_pg: ConnPg, tag: String, data_page: DataPage) -> Temp
         previous_page: previous_page,
         next_page: next_page,
         tag: tag,
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -147,6 +150,7 @@ pub fn index_user_tag(conn_pg: ConnPg, tag: String, user: UserOr, user_id: UserI
         previous_page: previous_page,
         next_page: next_page,
         tag: tag,
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -186,6 +190,7 @@ pub fn index_user_page_tag(conn_pg: ConnPg, tag: String, data_page: DataPage, us
         previous_page: previous_page,
         next_page: next_page,
         tag: tag,
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -214,6 +219,7 @@ pub fn index(conn_pg: ConnPg) -> Template {
         previous_page: previous_page,
         next_page: next_page,
         tag: "".to_string(),
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -242,6 +248,7 @@ pub fn index_page(conn_pg: ConnPg, data_page: DataPage) -> Template {
         previous_page: previous_page,
         next_page: next_page,
         tag: "".to_string(),
+        page_count: page_count,
     };
     Template::render("index", &context)
 }
@@ -271,6 +278,7 @@ pub fn index_user(conn_pg: ConnPg, user: UserOr, user_id: UserId) -> Template {
         previous_page: previous_page,
         next_page: next_page,
         tag: "".to_string(),
+        page_count: page_count,
     };
      
     Template::render("index", &context)
@@ -300,6 +308,7 @@ pub fn index_user_page(conn_pg: ConnPg, user: UserOr, user_id: UserId, data_page
         previous_page: previous_page,
         next_page: next_page,
         tag: "".to_string(),
+        page_count: page_count,
     };
      
     Template::render("index", &context)

@@ -96,14 +96,39 @@
                     </div>
                     <div>
                          <ul id="pagination">
-                             <li>
+                            <li>
                                 <a href="/{{tag}}?page={{previous_page}}" aria-label="Previous">
                                     <span aria-hidden="true">上一页</span>
                                 </a>
                             </li>
-                            {% for page in pages %}
-                            <li id="active"><a href="?page={{page}}">{{ loop.index }}</a></li>
+                            <li>
+                                <a href="/{{tag}}?page=1" >
+                                    <span aria-hidden="true">首页</span>
+                                </a>
+                            </li>
+                            <li>
+                                <span aria-hidden="true">•••</span>
+                            </li>
+
+                            {% for pye in pages %}
+                            {% if pye == page_count/2 - 1 %}
+                            <li id="active"><a href="?page={{ pye }}">{{ pye }}</a></li>
+                            {% endif %}
+                            {% if pye == page_count/2 %}
+                            <li id="active"><a href="?page={{ pye }}">{{ pye }}</a></li>
+                            {% endif %}
+                            {% if pye == page_count/2 + 1 %}
+                            <li id="active"><a href="?page={{ pye }}">{{ pye }}</a></li>
+                            {% endif %}
                             {% endfor %}
+                            <li>
+                                <span aria-hidden="true">•••</span>
+                            </li>
+                            <li>
+                                <a href="/{{tag}}?page={{ page_count }}" >
+                                    <span aria-hidden="true">尾页</span>
+                                </a>
+                            </li>
                             <li>
                                 <a href="/{{tag}}?page={{next_page}}" aria-label="Next">
                                     <span aria-hidden="true">下一页</span>
