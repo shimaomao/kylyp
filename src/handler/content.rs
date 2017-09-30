@@ -2,6 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use model::article::{Article,Comment,NewArticle,NewComment,STATUS};
 use model::user::{User,NewMessage,Message,message_mode,message_status};
+use model::wiki::Wiki;
 use controller::user::UserId;
 use chrono::prelude::*;
 use regex::{Regex,Captures};
@@ -45,7 +46,6 @@ pub struct Rarticle {
     pub rtime: String,
     pub updated_at: DateTime<Utc>,
 }
-
 #[derive(Debug, Serialize)]
 pub struct Ucomment {
     pub id: i32,
@@ -83,6 +83,17 @@ pub struct UserMessage {
     pub from_uid_email: String,
     pub article_id: i32,
     pub article_title: String,
+}
+#[derive(Debug,Serialize)]
+pub struct Rwiki {
+    pub id: i32,
+    pub category: String,
+    pub title: String,
+    pub raw: String,
+    pub cooked: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub rtime: String,
 }
 struct CommentId{
     id: i32,
@@ -615,4 +626,64 @@ pub fn update_user_message(conn_pg: &Connection, to_uid: i32, count: i32) {
         &conn_pg.execute("UPDATE message SET status = $1 WHERE to_uid = $2", &[&message_status::READ, &to_uid]).unwrap();
     }
     
+}
+
+pub fn get_wiki(conn_pg: &Connection) -> Vec<Rwiki> {
+    let mut wiki_result: Vec<Rwiki> = vec![];
+    for row in &conn_pg.query("SELECT wiki.id, wiki.category, wiki.title, wiki.raw, wiki.cooked, wiki.created_at, wiki.updated_at 
+                           FROM wiki ", &[]).unwrap()
+    {
+        let mut wiki = Rwiki {
+            id: row.get(0),
+            category: row.get(1),
+            title: row.get(2),
+            raw: row.get(3),
+            cooked: row.get(4),
+            created_at: row.get(5),
+            updated_at: row.get(6),
+            rtime: "".to_string(),
+        };
+        let created_at_seconds = get_seconds(wiki.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        wiki.rtime = dtime;
+        wiki_result.push(wiki);
+    }
+    wiki_result
+}
+
+pub fn get_wiki_by_id(conn_pg: &Connection, id: i32) -> Rwiki {
+    let mut wiki = Rwiki {
+        id: 0,
+        category: "".to_string(),
+        title: "".to_string(),
+        raw: "".to_string(),
+        cooked: "".to_string(),
+        created_at: Utc::now(), 
+        updated_at: Utc::now(), 
+        rtime: "".to_string(),    
+    };
+    for row in &conn_pg.query("SELECT wiki.id, wiki.category, wiki.title, wiki.raw, wiki.cooked, wiki.created_at, wiki.updated_at 
+                           FROM wiki WHERE wiki.id = $1", &[&id]).unwrap()
+    {
+        wiki = Rwiki {
+            id: row.get(0),
+            category: row.get(1),
+            title: row.get(2),
+            raw: row.get(3),
+            cooked: row.get(4),
+            created_at: row.get(5),
+            updated_at: row.get(6),
+            rtime: "".to_string(),
+        };
+        let created_at_seconds = get_seconds(wiki.created_at);
+        let rnow = Utc::now();
+        let rnow_seconds = get_seconds(rnow);
+        let ntime = rnow_seconds - created_at_seconds;
+        let dtime = timeago::format(Duration::new(ntime, 0), timeago::Style::LONG);
+        wiki.rtime = dtime;
+    }
+    wiki
 }

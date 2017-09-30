@@ -4,9 +4,8 @@ use rocket::request::Request;
 use rocket::response::NamedFile;
 use rocket_contrib::Template;
 use controller::user::{UserId,UserOr};
-use handler::content::{Uarticle,article_count,article_count_tag,article_count_no_comment,article_list_no_comment,article_list,article_list_tag,get_unread_message_count};
+use handler::content::{Rwiki,Uarticle,article_count,article_count_tag,article_count_no_comment,article_list_no_comment,article_list,article_list_tag,get_unread_message_count,get_wiki,get_wiki_by_id};
 use model::pg::ConnPg;
-
 
 pub const PAGE_SIZE: i32 = 18;
 
@@ -24,7 +23,10 @@ struct TemplateContext {
 }
 #[derive(Serialize)]
 struct TemplateWiki {
-    wiki: WikiData,
+    wikis: Vec<Rwiki>,
+    wiki: Rwiki,
+    username: String,
+    user_id: i32,
 }
 #[derive(Serialize)]
 struct TemplateDoc {
@@ -317,25 +319,59 @@ pub fn index_user_page(conn_pg: ConnPg, user: UserOr, user_id: UserId, data_page
     Template::render("index", &context)
 }
 #[get("/wiki",rank = 2)]
-pub fn wiki() -> Template {
-    // let wiki_data = get_wiki_by_wid(&conn_pg, wid );
-    // let context = TemplateWiki {
-    //     wiki: WikiData,
-    // };
-
-    let mut context = HashMap::new();
-    context.insert("No login user", "".to_string());
+pub fn wiki(conn_pg: ConnPg) -> Template {
+    let wikis = get_wiki(&conn_pg);
+    let id: i32 = 1;
+    let rwiki = get_wiki_by_id(&conn_pg, id);
+    let context = TemplateWiki {
+        wikis: wikis,
+        wiki: rwiki,
+        username: "".to_string(),
+        user_id: 0,
+    };
     Template::render("wiki", &context)
 }
 
 #[get("/wiki")]
-pub fn wiki_user(user: UserOr, user_id: UserId) -> Template {
-    let context = TemplateDoc {
+pub fn wiki_user(conn_pg: ConnPg, user: UserOr, user_id: UserId) -> Template {
+    let wikis = get_wiki(&conn_pg);
+    let id: i32 = 1;
+    let rwiki = get_wiki_by_id(&conn_pg, id);
+    let context = TemplateWiki {
+        wikis: wikis,
+        wiki: rwiki,
         username: user.0,
         user_id: user_id.0,
     };
     Template::render("wiki", &context)
 }
+
+#[get("/wiki/<id>",rank = 2)]
+pub fn wiki_id(conn_pg: ConnPg, id: i32) -> Template {
+    let wikis = get_wiki(&conn_pg);
+    let rwiki = get_wiki_by_id(&conn_pg, id);
+    let context = TemplateWiki {
+        wikis: wikis,
+        wiki: rwiki,
+        username: "".to_string(),
+        user_id: 0,
+    };
+    Template::render("wiki", &context)
+}
+
+#[get("/wiki/<id>")]
+pub fn wiki_user_id(conn_pg: ConnPg, id: i32, user: UserOr, user_id: UserId) -> Template {
+    let wikis = get_wiki(&conn_pg);
+    let rwiki = get_wiki_by_id(&conn_pg, id);
+    let context = TemplateWiki {
+        wikis: wikis,
+        wiki: rwiki,
+        username: user.0,
+        user_id: user_id.0,
+    };
+    Template::render("wiki", &context)
+}
+
 
 #[get("/more",rank = 2)]
 pub fn more() -> Template {

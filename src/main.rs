@@ -46,7 +46,7 @@ fn main() {
     rocket::ignite()
         .manage(pool_dsl)
         .manage(pool_pg)
-        .mount("/", routes![home::public,home::index_user_page,home::index_user,home::index_page,home::index,home::index_user_page_tag,home::index_user_tag,home::index_page_tag,home::index_tag,home::wiki_user,home::wiki,home::more_user,home::more])
+        .mount("/", routes![home::public,home::index_user_page,home::index_user,home::index_page,home::index,home::index_user_page_tag,home::index_user_tag,home::index_page_tag,home::index_tag,home::wiki_user,home::wiki,home::wiki_id,home::wiki_user_id,home::more_user,home::more])
         .mount("/user",routes![user::login_register,user::register,user::register_post,
                                user::login_user,user::login,user::login_post,user::logout,user::user_page_login_message,user::user_page_login,user::user_page])
         .mount("/article",routes![article::article,article::add_comment,article::article_nouser,article::new,article::add_article])
