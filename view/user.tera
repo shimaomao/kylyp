@@ -53,14 +53,14 @@
                 <div class="re-desk-75 re-table-100 ">
                     <div id="user-top">
                             <div id="new-theme">
-                                <h4> User-Centre </h4> 
+                                <h4> My-Centre </h4> 
                             </div>
                             <div id="person">
-                                <span id="person-info">user-img</span><span id="person-info">{{ this_user.username }}</span>
+                                <span id="person-info">user-img:</span><span id="person-info">{{ this_user.username }}</span>
                                 <div id="person-info">
                                     <p>email:{{ this_user.email }}</p>
                                     <p>Reg-time:{{ this_user.created_at }}</p>
-                                    <p>Topic:  Comment:</p>
+                                    <p>Publish:  Comment:</p>
                                     <p>Unread_count: {{ count }}</p>
                                 </div>
                             </div>

@@ -10,23 +10,23 @@ use model::pg::ConnPg;
 pub const PAGE_SIZE: i32 = 18;
 
 #[derive(Serialize)]
-struct TemplateContext {
-    datas: Vec<Uarticle>,
-    username: String,
-    user_id: i32,
-    count: i32,
-    pages: Vec<i32>,
-    previous_page: i32,
-    next_page: i32,
-    tag: String,
-    page_count: i32,
+pub struct TemplateContext {
+    pub datas: Vec<Uarticle>,
+    pub username: String,
+    pub user_id: i32,
+    pub count: i32,
+    pub pages: Vec<i32>,
+    pub previous_page: i32,
+    pub next_page: i32,
+    pub tag: String,
+    pub page_count: i32,
 }
 #[derive(Serialize)]
-struct TemplateWiki {
-    wikis: Vec<Rwiki>,
-    wiki: Rwiki,
-    username: String,
-    user_id: i32,
+pub struct TemplateWiki {
+    pub wikis: Vec<Rwiki>,
+    pub rwiki: Rwiki,
+    pub username: String,
+    pub user_id: i32,
 }
 #[derive(Serialize)]
 struct TemplateDoc {
@@ -325,7 +325,7 @@ pub fn wiki(conn_pg: ConnPg) -> Template {
     let rwiki = get_wiki_by_id(&conn_pg, id);
     let context = TemplateWiki {
         wikis: wikis,
-        wiki: rwiki,
+        rwiki: rwiki,
         username: "".to_string(),
         user_id: 0,
     };
@@ -339,7 +339,7 @@ pub fn wiki_user(conn_pg: ConnPg, user: UserOr, user_id: UserId) -> Template {
     let rwiki = get_wiki_by_id(&conn_pg, id);
     let context = TemplateWiki {
         wikis: wikis,
-        wiki: rwiki,
+        rwiki: rwiki,
         username: user.0,
         user_id: user_id.0,
     };
@@ -352,7 +352,7 @@ pub fn wiki_id(conn_pg: ConnPg, id: i32) -> Template {
     let rwiki = get_wiki_by_id(&conn_pg, id);
     let context = TemplateWiki {
         wikis: wikis,
-        wiki: rwiki,
+        rwiki: rwiki,
         username: "".to_string(),
         user_id: 0,
     };
@@ -365,7 +365,7 @@ pub fn wiki_user_id(conn_pg: ConnPg, id: i32, user: UserOr, user_id: UserId) -> 
     let rwiki = get_wiki_by_id(&conn_pg, id);
     let context = TemplateWiki {
         wikis: wikis,
-        wiki: rwiki,
+        rwiki: rwiki,
         username: user.0,
         user_id: user_id.0,
     };

@@ -12,3 +12,14 @@ pub struct Wiki {
     pub rtime: String,
     pub updated_at: DateTime<Utc>,
 }
+
+#[derive(Insertable)]
+#[table_name="wiki"]
+pub struct NewWiki<'a> {
+    pub category: &'a str,
+    pub title: &'a str,
+    pub raw: &'a str,
+    pub cooked: &'a str,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}

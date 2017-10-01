@@ -10,7 +10,7 @@ The project use rust, rocket, diesel, postgresql, and responsive design to build
 
 ```bash
 $ cd kylyp
-$ cargo install diesel_cli
+$ cargo install diesel_cli --no-default-features --features postgres
 $ diesel setup
 $ cargo run
 ```

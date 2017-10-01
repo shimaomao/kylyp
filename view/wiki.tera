@@ -53,49 +53,49 @@
                 <div class="re-desk-25">
                         <div id="navi">
                             <ul>
+                                <p><a ><strong>Docs</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Docs" %}
-                                    <p><a ><strong>Docs</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
                             <ul>
+                                <p><a ><strong>Resources</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Resources" %}
-                                    <p><a ><strong>Resources</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
                             <ul>
+                                <p><a ><strong>Web</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Web" %}
-                                    <p><a ><strong>Web</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
                             <ul>
+                                <p><a ><strong>Embed</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Embed" %}
-                                    <p><a ><strong>Embed</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
                             <ul>
+                                <p><a ><strong>Server</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Server" %}
-                                    <p><a ><strong>Server</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
                             <ul>
+                                <p><a ><strong>Client</strong></a></p>
                                 {% for data in wikis %}
                                 {% if data.category == "Client" %}
-                                    <p><a ><strong>Client</strong></a></p>
                                     <li><a href="/wiki/{{ data.id }}" title="{{ data.title }}">{{ data.title }}</a></li>
                                 {% endif %}
                                 {% endfor %}
@@ -129,12 +129,12 @@
                 <div class="re-desk-75 ">
                     <div id="wiki">
                         <div id="title">
-                            <h3> {{ wiki.title }} </h3>
+                            <h3> {{ rwiki.title }} </h3>
                             <span id="info">Admin</span>&emsp;
-                            <span id="info">{{ wiki.rtime }}</span>
+                            <span id="info">{{ rwiki.rtime }}</span>
                         </div>
                         <div id="content">
-                            {{ wiki.cooked | safe }}
+                            {{ rwiki.cooked | safe }}
                         </div>
                     </div>
                 </div>

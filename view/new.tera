@@ -67,6 +67,13 @@
                                             <option value="FAQ">FAQ</option>
                                             <option value="Job">Job</option>
                                             <option value="Blog">Blog</option>
+
+                                            <option value="Docs">Docs</option>
+                                            <option value="Resources">Resources</option>
+                                            <option value="Web">Web</option>
+                                            <option value="Embed">Embed</option>
+                                            <option value="Server">Server</option>
+                                            <option value="Client">Client</option>
                                         </select>
                                     </span>&emsp;
                                     {% else %}

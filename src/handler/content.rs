@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use model::article::{Article,Comment,NewArticle,NewComment,STATUS};
 use model::user::{User,NewMessage,Message,message_mode,message_status};
-use model::wiki::Wiki;
+use model::wiki::{Wiki, NewWiki};
 use controller::user::UserId;
 use chrono::prelude::*;
 use regex::{Regex,Captures};
@@ -404,6 +404,21 @@ pub fn add_article_by_uid<'a>(conn_dsl: &PgConnection, uid: i32, category: &'a s
         updated_at: updated_at,
     };
     diesel::insert(&new_article).into(article::table).execute(conn_dsl).expect("Error saving new list");
+}
+
+pub fn add_wiki_by_wid<'a>(conn_dsl: &PgConnection, category: &'a str, title: &'a str, raw: &'a str) {
+    use utils::schema::wiki;
+    let created_at = Utc::now();
+    let updated_at = Utc::now();
+    let new_wiki = NewWiki {
+        category: category,
+        title: title,
+        raw: raw,
+        cooked: &spongedown::parse(&raw),
+        created_at: created_at,
+        updated_at: updated_at,
+    };
+    diesel::insert(&new_wiki).into(wiki::table).execute(conn_dsl).expect("Error saving new wiki");
 }
         
 pub fn add_comment_by_aid<'a>(conn_pg: &Connection, conn_dsl: &PgConnection, aid: i32, uid: i32, raw: &'a str) {
