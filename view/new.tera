@@ -59,15 +59,16 @@
                             <div id="topic-group">
                                     {% if username == "admin" %}
                                     <span id="category">
-                                        <select name="category" id="category-control">
-                                            <option value="Announcement">Announcement</option>
-                                            <option value="Topic">Topic</option>
+                                        <select name="category" id="category-control" >
+                                            <option value="Topic">Topic <span class="icon-arrow"></span></option>
                                             <option value="Share">Share</option>
                                             <option value="Article">Article</option>
                                             <option value="FAQ">FAQ</option>
                                             <option value="Job">Job</option>
                                             <option value="Blog">Blog</option>
+                                            <option value="Announcement">Announcement</option>
 
+                                            <option style="color: #1EB332;" disabled="disabled" >--wiki--</option>
                                             <option value="Docs">Docs</option>
                                             <option value="Resources">Resources</option>
                                             <option value="Web">Web</option>
