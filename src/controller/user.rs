@@ -14,6 +14,8 @@ use handler::content::{Rarticle,UserComment,UserMessage,get_user_info,get_user_a
 use chrono::{DateTime,Utc};
 use model::db::ConnDsl;
 use model::pg::ConnPg;
+use diesel::pg::PgConnection;
+use bcrypt::{DEFAULT_COST, hash, verify};
 
 #[derive(Debug,Serialize)]
 pub struct Uid {
@@ -200,11 +202,16 @@ pub fn login_user(user: UserOr) -> Template {
 fn register_post(conn_dsl: ConnDsl, user_form: Form< UserRegister>) -> Result<Redirect, String> {
     let post_user = user_form.get();
     use utils::schema::users;
+    
     if &post_user.password == &post_user.password2 {
+            let hash_password = match hash(&post_user.password, DEFAULT_COST) {
+                Ok(h) => h,
+                Err(_) => panic!()
+            };
             let new_user = NewUser {
                 email: &post_user.email,
                 username: &post_user.username,
-                password: &post_user.password,
+                password: &hash_password,
                 created_at: Utc::now(),
             };
             diesel::insert(&new_user).into(users::table).execute(&*conn_dsl).expect("User is  Exist!");
@@ -214,52 +221,52 @@ fn register_post(conn_dsl: ConnDsl, user_form: Form< UserRegister>) -> Result<Re
     }
 }
 // -------------- method 1-------------
-#[post("/login", data = "<user_form>")]
-fn login_post(conn_pg: ConnPg, mut cookies: Cookies, user_form: Form<UserLogin>) -> Flash<Redirect> {
-    let post_user = user_form.get();
-    let mut uid = Uid {id : 0};
-    for row in &conn_pg.query("SELECT id FROM users WHERE username =$1  AND password = $2", &[&post_user.username,&post_user.password]).unwrap() {
-        uid = Uid {
-            id : row.get(0),
-        };
-    }
-    if uid.id != 0 {
-            cookies.add_private(Cookie::new("user_id",uid.id.to_string() ));
-            cookies.add_private(Cookie::new("username",post_user.username.to_string() ));
-            Flash::success(Redirect::to("/"), "Successfully logged in")
+// #[post("/login", data = "<user_form>")]
+// fn login_post(conn_pg: ConnPg, mut cookies: Cookies, user_form: Form<UserLogin>) -> Flash<Redirect> {
+//     let post_user = user_form.get();
+//     let mut uid = Uid {id : 0};
+//     for row in &conn_pg.query("SELECT id FROM users WHERE username =$1  AND password = $2", &[&post_user.username,&post_user.password]).unwrap() {
+//         uid = Uid {
+//             id : row.get(0),
+//         };
+//     }
+//     if uid.id != 0 {
+//             cookies.add_private(Cookie::new("user_id",uid.id.to_string() ));
+//             cookies.add_private(Cookie::new("username",post_user.username.to_string() ));
+//             Flash::success(Redirect::to("/"), "Successfully logged in")
             
-    }else {
-            Flash::error(Redirect::to("/user/login"), "Incorrect")
-    } 
-}
+//     }else {
+//             Flash::error(Redirect::to("/user/login"), "username or password Incorrect")
+//     } 
+// }
 
 // -------------- method 2 -------------
-// #[post("/login", data = "<user_form>")]
-// fn login_post(mut cookies: Cookies, user_form: Form<UserLogin>) -> Flash<Redirect> {
-//     use utils::schema::users::dsl::*;
-//     let post_user = user_form.get();
-//     let connection = establish_connection();
-//     let user_result =  users.filter(&username.eq(&post_user.username)).load::<User>(&connection);
-//     let login_user = match user_result {
-//         Ok(user_s) => match user_s.first() {
-//             Some(a_user) => Some(a_user.clone()),
-//             None => None,
-//         },
-//         Err(_) => None,
-//     };
-//     match login_user {
-//         Some(login_user) => {
-//             if &post_user.password == &login_user.password {
-//                 cookies.add_private(Cookie::new("username",post_user.username.to_string() ));
-//                 cookies.add_private(Cookie::new("user_id",login_user.id.to_string() ));
-//                 Flash::success(Redirect::to("/"), "Successfully logged in")
-//             }else {
-//                 Flash::error(Redirect::to("/user/login"), "Incorrect Password")
-//             }
-//         },
-//         None => Flash::error(Redirect::to("/user/login"), "Incorrect Username"),
-//     }
-// }
+#[post("/login", data = "<user_form>")]
+fn login_post(conn_dsl: ConnDsl, mut cookies: Cookies, user_form: Form<UserLogin>) -> Flash<Redirect> {
+    use utils::schema::users::dsl::*;
+    let post_user = user_form.get();
+    let user_result =  users.filter(&username.eq(&post_user.username)).load::<User>(&*conn_dsl);
+    let login_user = match user_result {
+        Ok(user_s) => match user_s.first() {
+            Some(a_user) => Some(a_user.clone()),
+            None => None,
+        },
+        Err(_) => None,
+    };
+    match login_user {
+        Some(login_user) => {
+            match verify(&post_user.password, &login_user.password) {
+                Ok(valid) => {
+                    cookies.add_private(Cookie::new("username",post_user.username.to_string() ));
+                    cookies.add_private(Cookie::new("user_id",login_user.id.to_string() ));
+                    Flash::success(Redirect::to("/"), "Successfully logged in")
+                },
+                Err(_) => Flash::error(Redirect::to("/user/login"), "Incorrect Password"),
+            }
+        },
+        None => Flash::error(Redirect::to("/user/login"), "Incorrect Username"),
+    }
+}
 
 #[get("/logout")]
 pub fn logout(mut cookies: Cookies) -> Flash<Redirect> {

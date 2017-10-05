@@ -6,8 +6,6 @@ use model::wiki::{Wiki, NewWiki};
 use controller::user::UserId;
 use chrono::prelude::*;
 use regex::{Regex,Captures};
-use config::*;
-use CFG_DEFAULT;
 use chrono::{DateTime,Utc};
 use spongedown;
 use diesel::pg::PgConnection;

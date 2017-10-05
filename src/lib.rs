@@ -26,6 +26,7 @@ extern crate r2d2;
 extern crate r2d2_diesel;
 extern crate r2d2_postgres;
 extern crate timeago;
+extern crate bcrypt;
 
 #[macro_use]
 mod controller;
@@ -40,7 +41,7 @@ use controller::{home,user,article};
 
 const CFG_DEFAULT: &'static str = "Rocket";
 
-fn main() {
+pub fn start() {
     let pool_dsl = model::db::init_pool();
     let pool_pg = model::pg::init_pool();
     rocket::ignite()

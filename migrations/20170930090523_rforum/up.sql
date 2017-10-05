@@ -7,12 +7,6 @@ CREATE TABLE users (
   UNIQUE (email, username)
 );
 
- INSERT INTO users (id, email, username, password, created_at) VALUES
- (1, 'admin@163.com', 'admin', 'admin','2017-07-23 23:41:45.672805609 +08:00'),
- (2, 'zzzz@163.com', 'zzzz', 'zzzz','2017-07-23 23:41:45.672805609 +08:00'),
- (3, 'aaaa@163.com', 'aaaa', 'aaaa','2017-07-23 23:41:45.672805609 +08:00');
- SELECT setval('users_id_seq', 3, true);
-
 
 CREATE TABLE  article (
   id SERIAL NOT NULL PRIMARY KEY,
