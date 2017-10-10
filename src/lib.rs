@@ -20,7 +20,6 @@ extern crate serde_json;
 extern crate dotenv;
 extern crate chrono;
 extern crate regex;
-extern crate config;
 extern crate spongedown;
 extern crate r2d2;
 extern crate r2d2_diesel;
@@ -38,8 +37,6 @@ mod utils;
 
 use rocket_contrib::Template;
 use controller::{home,user,article};
-
-const CFG_DEFAULT: &'static str = "Rocket";
 
 pub fn start() {
     let pool_dsl = model::db::init_pool();

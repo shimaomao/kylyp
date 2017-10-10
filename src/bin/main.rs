@@ -1,5 +1,5 @@
-extern crate kylyp_forum;
+extern crate kylyp;
 
 fn main() {
-    kylyp_forum::start();
+    kylyp::start();
 }

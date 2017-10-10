@@ -4,8 +4,12 @@ version = "1.0.0"
 authors = ["kriry <krircc@gmail.com>"]
 
 [[bin]]
-name = "kylyp"
+name = "kylyp_forum"
 path = "src/bin/main.rs"
+
+[lib]
+name = "kylyp"
+path = "src/lib.rs"
 
 [[test]]
 name = "tests"
