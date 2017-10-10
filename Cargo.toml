@@ -1,11 +1,7 @@
 [package]
 name = "kylyp"
-version = "0.7.0"
+version = "1.0.0"
 authors = ["kriry <krircc@gmail.com>"]
-
-[lib]
-name = "kylyp_forum"
-path = "src/lib.rs"
 
 [[bin]]
 name = "kylyp"
